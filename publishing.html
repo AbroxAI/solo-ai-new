@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Solo AI – Publishing</title>
+    <link rel="icon" type="image/x-icon" href="assets/images/logo/favicon.ico" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        /* ===== CSS Variables ===== */
+        :root {
+            --bg-page: #F8FAFC;
+            --bg-sidebar: #FFFFFF;
+            --bg-card: #FFFFFF;
+            --bg-input: #FFFFFF;
+            --bg-hover: #F8FAFC;
+            --bg-active: #EFF6FF;
+
+            --text-primary: #0F172A;
+            --text-secondary: #475569;
+            --text-muted: #94A3B8;
+
+            --border-color: #E5E7EB;
+            --border-divider: #E2E8F0;
+
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.08);
+
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+
+            --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .dark {
+            --bg-page: #0F172A;
+            --bg-sidebar: #1E293B;
+            --bg-card: #1E293B;
+            --bg-input: #1E293B;
+            --bg-hover: #0F172A;
+            --bg-active: #1E3A5F;
+
+            --text-primary: #F1F5F9;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+
+            --border-color: #334155;
+            --border-divider: #334155;
+
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            box-sizing: border-box;
+        }
+        body {
+            background: var(--bg-page);
+            margin: 0;
+            padding: 0;
+            transition: background 0.3s ease, color 0.3s ease;
+            color: var(--text-primary);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: var(--bg-page); border-radius: 8px; }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 8px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+        /* ===== Sidebar ===== */
+        .sidebar {
+            width: 250px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 40;
+            transition: transform 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+        }
+        .sidebar-brand { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-divider); display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
+        .sidebar-brand .logo-icon { width: 32px; height: 32px; background: #4F46E5; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.8rem; }
+        .sidebar-brand span { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); letter-spacing: -0.3px; }
+        .sidebar-user { padding: 0.75rem 1.5rem; border-bottom: 1px solid var(--border-divider); display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
+        .sidebar-user .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--bg-active); color: #2563EB; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.75rem; flex-shrink: 0; }
+        .sidebar-user .info .name { font-size: 0.8rem; font-weight: 600; color: var(--text-primary); }
+        .sidebar-user .info .plan { font-size: 0.6rem; font-weight: 500; color: var(--text-muted); display: flex; align-items: center; gap: 0.3rem; }
+        .sidebar-user .info .plan .dot { width: 5px; height: 5px; border-radius: 50%; background: #94A3B8; display: inline-block; }
+        .sidebar-nav { flex: 1; overflow-y: auto; padding: 0.75rem 0.75rem; }
+        .sidebar-nav .section-label { font-size: 0.55rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; padding: 0.5rem 0.9rem 0.2rem; }
+        .nav-link { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0.9rem; border-radius: var(--radius-sm); font-size: 0.8rem; font-weight: 500; color: var(--text-secondary); transition: all var(--transition); text-decoration: none; cursor: pointer; position: relative; }
+        .nav-link:hover { background: var(--bg-hover); color: var(--text-primary); }
+        .nav-link i { width: 1.1rem; text-align: center; font-size: 0.85rem; color: var(--text-muted); }
+        .nav-link.active { background: var(--bg-active); color: #2563EB; font-weight: 600; }
+        .nav-link.active i { color: #2563EB; }
+        .nav-link.active::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 3px; height: 20px; background: #2563EB; border-radius: 0 3px 3px 0; }
+        .nav-link .badge { margin-left: auto; background: var(--border-color); color: var(--text-secondary); font-size: 0.55rem; font-weight: 600; padding: 0.05rem 0.45rem; border-radius: 40px; }
+        .nav-link.active .badge { background: #DBEAFE; color: #1E40AF; }
+        .dark .nav-link.active .badge { background: #1E3A5F; color: #60A5FA; }
+
+        .sidebar-bottom { padding: 0.75rem 1.25rem; border-top: 1px solid var(--border-divider); flex-shrink: 0; }
+        .membership-card { background: var(--bg-hover); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 0.6rem 0.8rem; }
+        .membership-card .label { font-size: 0.6rem; font-weight: 600; color: var(--text-secondary); }
+        .membership-card .value { font-size: 0.6rem; font-weight: 600; color: #2563EB; }
+        .btn-upgrade { width: 100%; background: #2563EB; color: #FFFFFF; font-weight: 600; font-size: 0.65rem; padding: 0.35rem 0; border: none; border-radius: var(--radius-sm); cursor: pointer; transition: background 0.15s ease, transform 0.15s ease; margin-top: 0.4rem; }
+        .btn-upgrade:hover { background: #1D4ED8; transform: scale(1.02); }
+
+        /* ===== Main Content ===== */
+        .main-content { margin-left: 250px; padding: 0 32px 32px 32px; min-height: 100vh; background: var(--bg-page); transition: margin-left 0.3s ease, background 0.3s ease; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+        /* ===== Top Header ===== */
+        .top-header { height: 64px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding: 0 0 0.5rem 0; margin-bottom: 0; background: var(--bg-page); flex-shrink: 0; padding-left: 0.5rem; }
+        .top-header .left { display: flex; align-items: center; gap: 0.75rem; }
+        .top-header .left .hamburger { font-size: 1rem; color: var(--text-secondary); cursor: pointer; display: none; transition: color 0.3s ease; }
+        .top-header .left .hamburger:hover { color: var(--text-primary); }
+        .top-header .left .breadcrumb { font-size: 0.65rem; color: var(--text-muted); font-weight: 500; }
+        .top-header .left .breadcrumb span { color: var(--text-secondary); }
+        .top-header .left .page-title { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); letter-spacing: -0.3px; }
+        .top-header .left .page-title .sub { font-size: 0.65rem; font-weight: 400; color: var(--text-muted); margin-left: 0.4rem; }
+        .top-header .right { display: flex; align-items: center; gap: 1rem; }
+        .top-header .right .search-wrap { position: relative; }
+        .top-header .right .search-wrap input { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 40px; padding: 0.3rem 0.8rem 0.3rem 2rem; font-size: 0.7rem; color: var(--text-primary); width: 160px; transition: all var(--transition); outline: none; }
+        .top-header .right .search-wrap input:focus { border-color: #2563EB; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10); }
+        .top-header .right .search-wrap i { position: absolute; left: 0.6rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.7rem; }
+        .top-header .right .icon-btn { color: var(--text-secondary); cursor: pointer; transition: color var(--transition), transform 0.15s ease; font-size: 1rem; position: relative; }
+        .top-header .right .icon-btn:hover { color: var(--text-primary); transform: scale(1.05); }
+        .top-header .right .icon-btn .dot { position: absolute; top: -2px; right: -3px; width: 7px; height: 7px; background: #EF4444; border-radius: 50%; border: 2px solid var(--bg-page); }
+        .top-header .right .avatar-wrap { display: flex; align-items: center; gap: 0.4rem; }
+        .top-header .right .avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--bg-active); color: #2563EB; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.65rem; cursor: pointer; border: 2px solid transparent; }
+        .top-header .right .avatar:hover { border-color: #2563EB; }
+        .top-header .right .avatar-wrap .name { font-size: 0.7rem; font-weight: 500; color: var(--text-primary); }
+
+        /* ===== KPI Cards ===== */
+        .kpi-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1rem; margin-bottom: 1.5rem; margin-top: 0.5rem; flex-shrink: 0; }
+        .kpi-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem 1.2rem; display: flex; align-items: center; gap: 0.75rem; transition: box-shadow var(--transition), border-color var(--transition), background 0.3s ease, transform 0.15s ease; cursor: default; }
+        .kpi-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); border-color: #CBD5E1; }
+        .dark .kpi-card:hover { border-color: #475569; }
+        .kpi-card .icon-wrap { width: 38px; height: 38px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; }
+        .kpi-card .icon-wrap.blue { background: var(--bg-active); color: #2563EB; }
+        .kpi-card .icon-wrap.green { background: #ECFDF5; color: #16A34A; }
+        .dark .kpi-card .icon-wrap.green { background: #1A3A2A; color: #4ADE80; }
+        .kpi-card .icon-wrap.amber { background: #FFFBEB; color: #F59E0B; }
+        .dark .kpi-card .icon-wrap.amber { background: #3A2A1A; color: #FBBF24; }
+        .kpi-card .icon-wrap.rose { background: #FFF1F2; color: #EF4444; }
+        .dark .kpi-card .icon-wrap.rose { background: #3A1A1A; color: #F87171; }
+        .kpi-card .icon-wrap.purple { background: #F5F3FF; color: #4F46E5; }
+        .dark .kpi-card .icon-wrap.purple { background: #2A1A3A; color: #A78BFA; }
+        .kpi-card .info .number { font-size: 1.25rem; font-weight: 700; color: var(--text-primary); line-height: 1.2; }
+        .kpi-card .info .label { font-size: 0.65rem; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; }
+        .kpi-card .info .trend { font-size: 0.6rem; font-weight: 600; margin-left: 0.3rem; }
+        .kpi-card .info .trend.up { color: #16A34A; }
+        .kpi-card .info .trend.down { color: #EF4444; }
+        .kpi-card .sparkline { margin-left: auto; opacity: 0.4; font-size: 0.6rem; color: var(--text-muted); letter-spacing: 1px; }
+
+        /* ===== Publishing Layout ===== */
+        .publishing-layout { display: flex; flex: 1; overflow: hidden; gap: 1.5rem; margin-top: 0.5rem; }
+        .publishing-main { flex: 1; overflow-y: auto; padding-right: 0.5rem; padding-bottom: 1rem; }
+        .publishing-main::-webkit-scrollbar { width: 4px; }
+        .publishing-main::-webkit-scrollbar-track { background: transparent; }
+        .publishing-main::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+
+        /* ===== Cards ===== */
+        .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; margin-bottom: 1.25rem; transition: background 0.3s ease, border-color 0.3s ease, box-shadow var(--transition); }
+        .card:hover { box-shadow: var(--shadow-sm); }
+        .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; }
+        .card-header h3 { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
+
+        /* ===== Toolbar ===== */
+        .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin-bottom: 1rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
+        .toolbar .search-wrap { position: relative; flex: 1; min-width: 160px; max-width: 240px; }
+        .toolbar .search-wrap input { width: 100%; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 0.3rem 0.6rem 0.3rem 2rem; font-size: 0.7rem; color: var(--text-primary); outline: none; transition: border-color var(--transition); }
+        .toolbar .search-wrap input:focus { border-color: #2563EB; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08); }
+        .toolbar .search-wrap i { position: absolute; left: 0.5rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.65rem; }
+        .toolbar .filter-group { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+        .toolbar .filter-group .filter-btn { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 0.25rem 0.6rem; font-size: 0.65rem; font-weight: 500; color: var(--text-secondary); cursor: pointer; transition: all var(--transition); display: flex; align-items: center; gap: 0.3rem; }
+        .toolbar .filter-group .filter-btn:hover { border-color: var(--text-muted); background: var(--bg-hover); }
+        .toolbar .view-toggle { display: flex; border: 1px solid var(--border-color); border-radius: var(--radius-sm); overflow: hidden; }
+        .toolbar .view-toggle button { background: var(--bg-card); border: none; padding: 0.2rem 0.5rem; font-size: 0.65rem; color: var(--text-muted); cursor: pointer; transition: all var(--transition); }
+        .toolbar .view-toggle button.active { background: var(--bg-active); color: #2563EB; }
+        .btn-primary { background: #2563EB; color: #FFFFFF; font-weight: 600; font-size: 0.7rem; padding: 0.3rem 1rem; border: none; border-radius: var(--radius-sm); cursor: pointer; transition: background 0.15s ease, transform 0.15s ease; display: flex; align-items: center; gap: 0.4rem; white-space: nowrap; }
+        .btn-primary:hover { background: #1D4ED8; transform: scale(1.02); }
+
+        /* ===== Calendar ===== */
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.25rem; }
+        .calendar-grid .day-header { font-size: 0.6rem; font-weight: 600; color: var(--text-muted); text-align: center; padding: 0.3rem 0; text-transform: uppercase; letter-spacing: 0.5px; }
+        .calendar-grid .day-cell { min-height: 72px; border-radius: var(--radius-sm); padding: 0.3rem 0.25rem; cursor: pointer; transition: background var(--transition), border-color var(--transition); border: 1px solid transparent; position: relative; background: var(--bg-page); }
+        .calendar-grid .day-cell:hover { background: var(--bg-hover); border-color: var(--border-color); }
+        .calendar-grid .day-cell .date { font-size: 0.65rem; font-weight: 500; color: var(--text-secondary); display: block; margin-bottom: 0.15rem; }
+        .calendar-grid .day-cell .date.today { color: #2563EB; font-weight: 700; }
+        .calendar-grid .day-cell .date.other-month { color: var(--text-muted); opacity: 0.5; }
+        .calendar-grid .day-cell .events { display: flex; flex-direction: column; gap: 0.1rem; }
+        .calendar-grid .day-cell .events .event-dot { display: flex; align-items: center; gap: 0.15rem; font-size: 0.5rem; padding: 0.05rem 0.2rem; border-radius: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-secondary); background: var(--bg-hover); transition: background 0.3s ease, color 0.3s ease; cursor: pointer; }
+        .calendar-grid .day-cell .events .event-dot:hover { background: var(--bg-active); }
+        .calendar-grid .day-cell .events .event-dot .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+        .calendar-grid .day-cell .events .event-dot .dot.youtube { background: #FF0000; }
+        .calendar-grid .day-cell .events .event-dot .dot.instagram { background: #E4405F; }
+        .calendar-grid .day-cell .events .event-dot .dot.tiktok { background: #00F2EA; }
+        .calendar-grid .day-cell .events .event-dot .dot.facebook { background: #1877F2; }
+        .calendar-grid .day-cell .events .event-dot .dot.linkedin { background: #0A66C2; }
+        .calendar-grid .day-cell .events .event-dot .dot.pinterest { background: #E60023; }
+
+        .calendar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; }
+        .calendar-header .month-nav { display: flex; align-items: center; gap: 0.75rem; }
+        .calendar-header .month-nav button { background: transparent; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 0.2rem 0.5rem; color: var(--text-secondary); cursor: pointer; transition: all var(--transition); font-size: 0.65rem; }
+        .calendar-header .month-nav button:hover { border-color: #2563EB; color: #2563EB; background: var(--bg-active); }
+        .calendar-header .month-nav .month-label { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); min-width: 120px; text-align: center; }
+        .calendar-header .view-btns { display: flex; gap: 0.2rem; }
+        .calendar-header .view-btns button { background: transparent; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 0.15rem 0.6rem; font-size: 0.6rem; font-weight: 500; color: var(--text-secondary); cursor: pointer; transition: all var(--transition); }
+        .calendar-header .view-btns button.active { background: var(--bg-active); color: #2563EB; border-color: #2563EB; }
+
+        /* ===== Queue ===== */
+        .queue-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0.5rem; border-bottom: 1px solid var(--border-color); transition: background var(--transition), border-color 0.3s ease; border-radius: var(--radius-sm); cursor: pointer; }
+        .queue-item:hover { background: var(--bg-hover); }
+        .queue-item:last-child { border-bottom: none; }
+        .queue-item .thumb { width: 36px; height: 36px; border-radius: var(--radius-sm); background: var(--bg-hover); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; color: var(--text-muted); }
+        .queue-item .info { flex: 1; min-width: 0; }
+        .queue-item .info .title { font-size: 0.75rem; font-weight: 500; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .queue-item .info .meta { font-size: 0.6rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+        .queue-item .info .meta .status { font-weight: 600; font-size: 0.5rem; text-transform: uppercase; letter-spacing: 0.3px; padding: 0.05rem 0.4rem; border-radius: 40px; }
+        .queue-item .info .meta .status.scheduled { color: #2563EB; background: var(--bg-active); }
+        .dark .queue-item .info .meta .status.scheduled { background: #1E3A5F; color: #60A5FA; }
+        .queue-item .info .meta .status.queued { color: #F59E0B; background: #FFFBEB; }
+        .dark .queue-item .info .meta .status.queued { background: #3A2A1A; color: #FBBF24; }
+        .queue-item .info .meta .status.ready { color: #16A34A; background: #ECFDF5; }
+        .dark .queue-item .info .meta .status.ready { background: #1A3A2A; color: #4ADE80; }
+        .queue-item .info .meta .status.pending { color: #94A3B8; background: var(--border-color); }
+        .queue-item .actions { display: flex; gap: 0.3rem; opacity: 0; transition: opacity var(--transition); }
+        .queue-item:hover .actions { opacity: 1; }
+        .queue-item .actions button { background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.6rem; padding: 0.1rem 0.2rem; transition: color var(--transition); }
+        .queue-item .actions button:hover { color: #2563EB; }
+
+        /* ===== Right Panel ===== */
+        .right-panel { width: 280px; flex-shrink: 0; padding-left: 0; display: flex; flex-direction: column; gap: 1rem; overflow-y: auto; padding-bottom: 1rem; }
+        .right-panel::-webkit-scrollbar { width: 3px; }
+        .right-panel::-webkit-scrollbar-track { background: transparent; }
+        .right-panel::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+
+        .panel-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.9rem 1.1rem; transition: background 0.3s ease, border-color 0.3s ease; }
+        .panel-card .card-title { font-size: 0.65rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between; }
+        .panel-card .card-title .more { font-size: 0.55rem; font-weight: 500; color: #2563EB; cursor: pointer; }
+
+        /* ===== Platform Activity ===== */
+        .platform-activity { display: flex; flex-direction: column; gap: 0.3rem; }
+        .platform-activity .row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.6rem; color: var(--text-secondary); }
+        .platform-activity .row .name { width: 60px; font-weight: 500; flex-shrink: 0; }
+        .platform-activity .row .bar-track { flex: 1; height: 5px; background: var(--border-color); border-radius: 4px; overflow: hidden; }
+        .platform-activity .row .bar-track .fill { height: 100%; border-radius: 4px; }
+        .platform-activity .row .count { font-weight: 600; width: 20px; text-align: right; flex-shrink: 0; color: var(--text-primary); }
+
+        /* ===== Toast ===== */
+        .toast-notification { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 0.5rem 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); font-size: 0.75rem; font-weight: 500; display: flex; align-items: center; gap: 0.6rem; z-index: 200; opacity: 0; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none; max-width: 90%; }
+        .toast-notification.show { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: auto; }
+        .toast-notification i { color: #16A34A; font-size: 0.9rem; }
+        .toast-notification .close { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0 0 0 0.4rem; font-size: 0.7rem; transition: color var(--transition); pointer-events: auto; }
+        .toast-notification .close:hover { color: var(--text-primary); }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 1200px) { .right-panel { display: none; } }
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay { display: none; position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.3); z-index:39; }
+            .sidebar-overlay.active { display: block; }
+            .main-content { margin-left: 0; padding: 0 0.75rem 0.75rem 0.75rem; }
+            .top-header .left .hamburger { display: block; }
+            .top-header .left .breadcrumb { display: none; }
+            .top-header .left .page-title .sub { display: none; }
+            .top-header .right .search-wrap { display: none; }
+            .top-header .right .avatar-wrap .name { display: none; }
+            .publishing-layout { flex-direction: column; overflow-y: auto; }
+            .publishing-main { overflow-y: visible; padding-right: 0; }
+            .kpi-row { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 640px) {
+            .kpi-row { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
+            .kpi-card { padding: 0.7rem 0.9rem; }
+            .kpi-card .info .number { font-size: 1rem; }
+            .top-header .left .page-title { font-size: 0.9rem; }
+            .top-header .left .page-title .sub { display: none; }
+            .top-header .right { gap: 0.5rem; }
+            .top-header .right .icon-btn { font-size: 0.85rem; }
+            .top-header .right .avatar { width: 26px; height: 26px; font-size: 0.55rem; }
+            .toolbar .search-wrap { min-width: 100px; max-width: 100%; flex: 1 1 100%; }
+            .toolbar .filter-group { flex-wrap: wrap; }
+            .toolbar .filter-group .filter-btn { font-size: 0.55rem; padding: 0.2rem 0.4rem; }
+            .btn-primary { font-size: 0.6rem; padding: 0.25rem 0.6rem; }
+            .calendar-grid .day-cell { min-height: 48px; padding: 0.15rem; }
+            .calendar-grid .day-cell .date { font-size: 0.55rem; }
+            .calendar-grid .day-cell .events .event-dot { font-size: 0.4rem; padding: 0.02rem 0.15rem; }
+            .calendar-header .month-nav .month-label { font-size: 0.8rem; min-width: 100px; }
+            .card { padding: 0.75rem; }
+            .card-header { flex-direction: column; align-items: flex-start; gap: 0.3rem; }
+        }
+        @media (max-width: 480px) {
+            .kpi-row { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+            .kpi-card { padding: 0.5rem 0.7rem; }
+            .kpi-card .icon-wrap { width: 30px; height: 30px; font-size: 0.7rem; }
+            .kpi-card .info .number { font-size: 0.9rem; }
+            .kpi-card .sparkline { display: none; }
+            .top-header { height: 56px; padding-left: 0.25rem; }
+            .top-header .right { gap: 0.4rem; }
+            .top-header .right .icon-btn { font-size: 0.75rem; }
+            .top-header .right .avatar { width: 24px; height: 24px; font-size: 0.5rem; }
+        }
+
+        /* ===== Dark Mode ===== */
+        .dark .calendar-grid .day-cell { background: #0F172A; }
+        .dark .calendar-grid .day-cell:hover { background: #1E293B; border-color: #334155; }
+        .dark .calendar-grid .day-cell .events .event-dot { background: #1E293B; color: #94A3B8; }
+        .dark .calendar-grid .day-cell .events .event-dot:hover { background: #1E3A5F; }
+        .dark .queue-item .thumb { background: #0F172A; }
+        .dark .queue-item .actions button { color: #64748B; }
+        .dark .queue-item .actions button:hover { color: #60A5FA; }
+        .dark .platform-activity .row .bar-track { background: #334155; }
+        .dark .platform-activity .row .count { color: #F1F5F9; }
+        .dark .toolbar .filter-group .filter-btn { background: #1E293B; border-color: #334155; color: #94A3B8; }
+        .dark .toolbar .view-toggle button { background: #1E293B; color: #94A3B8; }
+        .dark .toolbar .view-toggle button.active { background: #1E3A5F; color: #60A5FA; }
+        .dark .calendar-header .view-btns button { color: #94A3B8; border-color: #334155; }
+        .dark .calendar-header .view-btns button.active { background: #1E3A5F; color: #60A5FA; border-color: #60A5FA; }
+        .dark .calendar-header .month-nav button { color: #94A3B8; border-color: #334155; }
+        .dark .calendar-header .month-nav button:hover { border-color: #60A5FA; color: #60A5FA; background: #1E3A5F; }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- ============================================================ -->
+    <!-- SIDEBAR                                                       -->
+    <!-- ============================================================ -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="logo-icon">SA</div>
+            <span>Solo AI</span>
+        </div>
+        <div class="sidebar-user">
+            <div class="avatar" id="sidebarAvatar">DL</div>
+            <div class="info">
+                <div class="name" id="sidebarName">Damian Lee</div>
+                <div class="plan"><span class="dot"></span> Free Plan</div>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="section-label">Main</div>
+            <a class="nav-link" href="dashboard.html"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a class="nav-link" href="ai-studio.html"><i class="fas fa-sparkles"></i> AI Studio</a>
+            <a class="nav-link" href="content.html"><i class="fas fa-folder"></i> Content</a>
+            <a class="nav-link active" href="publishing.html"><i class="fas fa-calendar-alt"></i> Publishing</a>
+            <a class="nav-link" href="analytics.html"><i class="fas fa-chart-line"></i> Analytics</a>
+            <a class="nav-link" href="community.html"><i class="fas fa-users"></i> Community <span class="badge">24</span></a>
+            <a class="nav-link" href="courses.html"><i class="fas fa-graduation-cap"></i> Courses</a>
+            <a class="nav-link" href="marketplace.html"><i class="fas fa-store"></i> Marketplace <span class="badge">12</span></a>
+            <a class="nav-link" href="support.html"><i class="fas fa-headset"></i> Support <span class="badge">4</span></a>
+            <a class="nav-link" href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+        </nav>
+        <div class="sidebar-bottom">
+            <div class="membership-card">
+                <div class="flex items-center justify-between">
+                    <span class="label">Membership</span>
+                    <span class="value">Free</span>
+                </div>
+                <button class="btn-upgrade" onclick="window.location.href='marketplace.html'">⬆ View Plans</button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ============================================================ -->
+    <!-- MAIN CONTENT                                                  -->
+    <!-- ============================================================ -->
+    <div class="main-content" id="mainContent">
+
+        <!-- TOP HEADER -->
+        <header class="top-header">
+            <div class="left">
+                <div class="hamburger" id="menuToggle"><i class="fas fa-bars"></i></div>
+                <div class="breadcrumb">Dashboard / <span>Publishing</span></div>
+                <div class="page-title">
+                    Publishing
+                    <span class="sub">Schedule, organize, and publish content across all your connected platforms.</span>
+                </div>
+            </div>
+            <div class="right">
+                <div class="search-wrap">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search..." id="globalSearch" />
+                </div>
+                <div class="icon-btn" id="notifBtn">
+                    <i class="fas fa-bell"></i>
+                    <span class="dot"></span>
+                </div>
+                <div class="icon-btn" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </div>
+                <div class="avatar-wrap">
+                    <div class="avatar" id="headerAvatar">DL</div>
+                    <span class="name" id="headerName">Damian</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- ============================================================ -->
+        <!-- KPI ROW (Zeroed for new user)                                -->
+        <!-- ============================================================ -->
+        <div class="kpi-row">
+            <div class="kpi-card">
+                <div class="icon-wrap blue"><i class="fas fa-calendar-check"></i></div>
+                <div class="info">
+                    <div class="number">0</div>
+                    <div class="label">Scheduled</div>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="icon-wrap green"><i class="fas fa-check-circle"></i></div>
+                <div class="info">
+                    <div class="number">0</div>
+                    <div class="label">Published Today</div>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="icon-wrap amber"><i class="fas fa-clock"></i></div>
+                <div class="info">
+                    <div class="number">0</div>
+                    <div class="label">Queued</div>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="icon-wrap rose"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="info">
+                    <div class="number">0</div>
+                    <div class="label">Failed</div>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="icon-wrap purple"><i class="fas fa-link"></i></div>
+                <div class="info">
+                    <div class="number">0</div>
+                    <div class="label">Connected</div>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="icon-wrap blue"><i class="fas fa-arrow-up"></i></div>
+                <div class="info">
+                    <div class="number">—</div>
+                    <div class="label">Engagement</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- TOOLBAR                                                       -->
+        <!-- ============================================================ -->
+        <div class="toolbar">
+            <div class="search-wrap">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search posts..." id="toolbarSearch" />
+            </div>
+            <div class="filter-group">
+                <button class="filter-btn"><i class="fas fa-filter"></i> Platform</button>
+                <button class="filter-btn"><i class="fas fa-tag"></i> Status</button>
+                <button class="filter-btn"><i class="fas fa-calendar-alt"></i> Date</button>
+                <button class="filter-btn"><i class="fas fa-sort"></i> Sort</button>
+            </div>
+            <div class="view-toggle">
+                <button class="active"><i class="fas fa-th"></i></button>
+                <button><i class="fas fa-list"></i></button>
+            </div>
+            <button class="btn-primary" style="margin-left:auto;"><i class="fas fa-plus"></i> New Schedule</button>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- PUBLISHING LAYOUT                                            -->
+        <!-- ============================================================ -->
+        <div class="publishing-layout">
+
+            <!-- MAIN CONTENT -->
+            <div class="publishing-main">
+
+                <!-- Calendar -->
+                <div class="card">
+                    <div class="calendar-header">
+                        <div class="month-nav">
+                            <button id="prevMonth"><i class="fas fa-chevron-left"></i></button>
+                            <span class="month-label" id="monthLabel">February 2025</span>
+                            <button id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+                            <button id="todayBtn" style="font-size:0.6rem;padding:0.15rem 0.5rem;border:1px solid var(--border-color);border-radius:var(--radius-sm);background:transparent;color:var(--text-secondary);cursor:pointer;">Today</button>
+                        </div>
+                        <div class="view-btns">
+                            <button class="active">Week</button>
+                            <button>Month</button>
+                            <button>Agenda</button>
+                        </div>
+                    </div>
+                    <div class="calendar-grid" id="calendarGrid">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+
+                <!-- Publishing Queue -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-list-ul" style="color:#2563EB;margin-right:0.4rem;"></i> Publishing Queue</h3>
+                        <span style="font-size:0.65rem;font-weight:500;color:#2563EB;cursor:pointer;" id="viewAllQueue">View All</span>
+                    </div>
+                    <div id="queueList">
+                        <!-- Empty state for new user -->
+                        <div style="text-align:center;padding:1.5rem;">
+                            <i class="fas fa-inbox" style="font-size:1.5rem;color:var(--text-muted);"></i>
+                            <p style="font-size:0.7rem;color:var(--text-muted);margin-top:0.4rem;">No scheduled posts yet</p>
+                            <button class="btn-primary" style="margin:0.4rem auto;">Create Schedule</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- RIGHT PANEL                                                  -->
+            <!-- ============================================================ -->
+            <div class="right-panel">
+
+                <!-- Getting Started -->
+                <div class="panel-card">
+                    <div class="card-title">Getting Started</div>
+                    <div style="display:flex;flex-direction:column;gap:0.4rem;">
+                        <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.65rem;color:var(--text-secondary);">
+                            <span style="width:20px;height:20px;border-radius:50%;background:var(--bg-active);display:flex;align-items:center;justify-content:center;color:#2563EB;"><i class="fas fa-link"></i></span>
+                            Connect social accounts
+                        </div>
+                        <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.65rem;color:var(--text-secondary);">
+                            <span style="width:20px;height:20px;border-radius:50%;background:var(--bg-active);display:flex;align-items:center;justify-content:center;color:#2563EB;"><i class="fas fa-pen-fancy"></i></span>
+                            Create your first post
+                        </div>
+                        <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.65rem;color:var(--text-secondary);">
+                            <span style="width:20px;height:20px;border-radius:50%;background:var(--bg-active);display:flex;align-items:center;justify-content:center;color:#2563EB;"><i class="fas fa-calendar-alt"></i></span>
+                            Schedule and publish
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Membership CTA -->
+                <div class="panel-card">
+                    <div class="card-title">Unlock Full Features</div>
+                    <p style="font-size:0.6rem;color:var(--text-muted);margin-bottom:0.5rem;">
+                        Upgrade to a premium plan to access advanced scheduling and more.
+                    </p>
+                    <button class="btn-upgrade" onclick="window.location.href='marketplace.html'">View Plans</button>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PROFILE LOADER                                               -->
+    <!-- ============================================================ -->
+    <script src="assets/js/profile-loader.js"></script>
+
+    <!-- ============================================================ -->
+    <!-- SCRIPTS                                                       -->
+    <!-- ============================================================ -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // ===== THEME =====
+            const themeToggle = document.getElementById('themeToggle');
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+                themeToggle.querySelector('i').className = 'fas fa-sun';
+            }
+            themeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark');
+                const isDark = document.body.classList.contains('dark');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                this.querySelector('i').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+            });
+
+            // ===== SIDEBAR =====
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const menuToggle = document.getElementById('menuToggle');
+
+            menuToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('active');
+            });
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                }
+            });
+
+            // ===== TOAST =====
+            let toastTimeout;
+
+            function showToast(msg, icon = 'fa-check-circle') {
+                const existing = document.querySelector('.toast-notification');
+                if (existing) existing.remove();
+                clearTimeout(toastTimeout);
+                const toast = document.createElement('div');
+                toast.className = 'toast-notification';
+                toast.style.cssText = `
+                    position: fixed;
+                    bottom: 1.5rem;
+                    left: 50%;
+                    transform: translateX(-50%) translateY(20px);
+                    background: var(--bg-card);
+                    border: 1px solid var(--border-color);
+                    color: var(--text-primary);
+                    padding: 0.5rem 1rem;
+                    border-radius: var(--radius-md);
+                    box-shadow: var(--shadow-lg);
+                    font-size: 0.75rem;
+                    font-weight: 500;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.6rem;
+                    z-index: 200;
+                    opacity: 0;
+                    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+                    pointer-events: none;
+                    max-width: 90%;
+                `;
+                toast.innerHTML =
+                    `<i class="fas ${icon}"></i><span>${msg}</span><button class="close" style="background:none;border:none;color:var(--text-muted);cursor:pointer;padding:0 0 0 0.4rem;font-size:0.7rem;transition:color var(--transition);pointer-events:auto;">&times;</button>`;
+                document.body.appendChild(toast);
+                requestAnimationFrame(() => toast.classList.add('show'));
+                toast.querySelector('.close').addEventListener('click', () => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                });
+                toastTimeout = setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3500);
+            }
+
+            // ===== NOTIFICATIONS =====
+            document.getElementById('notifBtn').addEventListener('click', function() {
+                showToast('🔔 3 new notifications', 'fa-bell');
+            });
+
+            // ===== CALENDAR =====
+            let currentMonth = new Date().getMonth();
+            let currentYear = new Date().getFullYear();
+            const today = new Date();
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+            function renderCalendar() {
+                const grid = document.getElementById('calendarGrid');
+                const label = document.getElementById('monthLabel');
+                label.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+
+                const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+                const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+                const daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate();
+
+                let html = '';
+                const dayHeaders = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                dayHeaders.forEach(d => { html += `<div class="day-header">${d}</div>`; });
+
+                const startOffset = (firstDay === 0 ? 6 : firstDay - 1);
+
+                for (let i = startOffset - 1; i >= 0; i--) {
+                    const date = daysInPrevMonth - i;
+                    html += `<div class="day-cell" data-date="${date}" data-month="${currentMonth-1 < 0 ? 11 : currentMonth-1}" data-year="${currentMonth-1 < 0 ? currentYear-1 : currentYear}"><span class="date other-month">${date}</span></div>`;
+                }
+
+                for (let d = 1; d <= daysInMonth; d++) {
+                    const isToday = d === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear();
+                    html += `
+                        <div class="day-cell" data-date="${d}" data-month="${currentMonth}" data-year="${currentYear}">
+                            <span class="date ${isToday ? 'today' : ''}">${d}</span>
+                            <div class="events"></div>
+                        </div>
+                    `;
+                }
+
+                const totalCells = startOffset + daysInMonth;
+                const remaining = (7 - (totalCells % 7)) % 7;
+                for (let i = 1; i <= remaining; i++) {
+                    html += `<div class="day-cell" data-date="${i}" data-month="${currentMonth+1 > 11 ? 0 : currentMonth+1}" data-year="${currentMonth+1 > 11 ? currentYear+1 : currentYear}"><span class="date other-month">${i}</span></div>`;
+                }
+
+                grid.innerHTML = html;
+
+                grid.querySelectorAll('.day-cell').forEach(cell => {
+                    cell.addEventListener('click', function() {
+                        const date = this.dataset.date;
+                        const month = this.dataset.month;
+                        const year = this.dataset.year;
+                        if (date && month && year) {
+                            const displayDate = `${date} ${monthNames[parseInt(month)]} ${year}`;
+                            showToast(`📅 Showing posts for ${displayDate}`, 'fa-calendar-alt');
+                        }
+                    });
+                });
+            }
+
+            document.getElementById('prevMonth').addEventListener('click', function() {
+                if (currentMonth === 0) { currentMonth = 11; currentYear--; } else { currentMonth--; }
+                renderCalendar();
+            });
+            document.getElementById('nextMonth').addEventListener('click', function() {
+                if (currentMonth === 11) { currentMonth = 0; currentYear++; } else { currentMonth++; }
+                renderCalendar();
+            });
+            document.getElementById('todayBtn').addEventListener('click', function() {
+                currentMonth = today.getMonth();
+                currentYear = today.getFullYear();
+                renderCalendar();
+                showToast('📅 Jumped to today', 'fa-calendar-day');
+            });
+
+            // ===== VIEW BUTTONS =====
+            document.querySelectorAll('.view-btns button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.view-btns button').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    showToast(`📅 ${this.textContent} view`, 'fa-calendar');
+                });
+            });
+
+            // ===== FILTER BUTTONS =====
+            document.querySelectorAll('.filter-group .filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    showToast(`🔍 Filter: ${this.textContent.trim()}`, 'fa-filter');
+                });
+            });
+
+            // ===== VIEW TOGGLE =====
+            document.querySelectorAll('.view-toggle button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.view-toggle button').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    showToast(this.querySelector('i').className.includes('th') ? '📇 Grid view' : '📋 List view', 'fa-th');
+                });
+            });
+
+            // ===== NEW SCHEDULE / CREATE SCHEDULE =====
+            document.querySelectorAll('.btn-primary').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    showToast('📅 Opening schedule creator', 'fa-plus-circle');
+                });
+            });
+
+            // ===== VIEW ALL QUEUE =====
+            document.getElementById('viewAllQueue').addEventListener('click', function() {
+                showToast('📋 Showing full publishing queue', 'fa-list-ul');
+            });
+
+            // ===== SEARCH =====
+            const toolbarSearch = document.getElementById('toolbarSearch');
+            const globalSearch = document.getElementById('globalSearch');
+
+            function handleSearch(e) {
+                const query = this.value.trim();
+                if (query.length > 0) {
+                    showToast(`🔍 Searching: "${query}"`, 'fa-search');
+                }
+            }
+            toolbarSearch.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') handleSearch.call(this, e);
+            });
+            globalSearch.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') handleSearch.call(this, e);
+            });
+
+            // ===== KEYBOARD SHORTCUTS =====
+            document.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    toolbarSearch.focus();
+                }
+            });
+
+            // ===== INITIAL RENDER =====
+            renderCalendar();
+
+            // ===== SIMULATE REAL-TIME UPDATE =====
+            setTimeout(() => {
+                showToast('📅 Publishing page ready', 'fa-calendar-alt');
+            }, 3000);
+
+        });
+    </script>
+
+</body>
+</html>
