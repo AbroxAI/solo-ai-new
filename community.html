@@ -1,0 +1,3354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Solo AI – Community</title>
+    <link rel="icon" type="image/x-icon" href="assets/images/logo/favicon.ico" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        /* ===== All CSS with layout fixes ===== */
+        :root {
+            --bg-page: #F8FAFC;
+            --bg-sidebar: #FFFFFF;
+            --bg-card: #FFFFFF;
+            --bg-input: #FFFFFF;
+            --bg-hover: #F8FAFC;
+            --bg-active: #EFF6FF;
+            --bg-thread: #F8FAFC;
+            --text-primary: #0F172A;
+            --text-secondary: #475569;
+            --text-muted: #94A3B8;
+            --border-color: #E5E7EB;
+            --border-divider: #E2E8F0;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.08);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .dark {
+            --bg-page: #0F172A;
+            --bg-sidebar: #1E293B;
+            --bg-card: #1E293B;
+            --bg-input: #1E293B;
+            --bg-hover: #0F172A;
+            --bg-active: #1E3A5F;
+            --bg-thread: #0F172A;
+            --text-primary: #F1F5F9;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+            --border-color: #334155;
+            --border-divider: #334155;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            box-sizing: border-box;
+        }
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        body {
+            background: var(--bg-page);
+            transition: background 0.3s ease, color 0.3s ease;
+            color: var(--text-primary);
+        }
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-page);
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        /* ===== Sidebar ===== */
+        .sidebar {
+            width: 250px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 40;
+            transition: transform 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+            overflow: hidden;
+        }
+        .sidebar-brand {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border-divider);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-shrink: 0;
+        }
+        .sidebar-brand .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: #4F46E5;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+        .sidebar-brand span {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.3px;
+        }
+        .sidebar-user {
+            padding: 0.75rem 1.5rem;
+            border-bottom: 1px solid var(--border-divider);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-shrink: 0;
+        }
+        .sidebar-user .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-active);
+            color: #2563EB;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+            background-size: cover;
+            background-position: center;
+        }
+        .sidebar-user .info .name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .sidebar-user .info .plan {
+            font-size: 0.6rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .sidebar-user .info .plan .dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #16A34A;
+            display: inline-block;
+        }
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.75rem 0.75rem;
+            min-height: 0;
+        }
+        .sidebar-nav .section-label {
+            font-size: 0.55rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0.5rem 0.9rem 0.2rem;
+        }
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0.9rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all var(--transition);
+            text-decoration: none;
+            cursor: pointer;
+            position: relative;
+        }
+        .nav-link:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        .nav-link i {
+            width: 1.1rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .nav-link.active {
+            background: var(--bg-active);
+            color: #2563EB;
+            font-weight: 600;
+        }
+        .nav-link.active i {
+            color: #2563EB;
+        }
+        .nav-link.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 20px;
+            background: #2563EB;
+            border-radius: 0 3px 3px 0;
+        }
+        .nav-link .badge {
+            margin-left: auto;
+            background: var(--border-color);
+            color: var(--text-secondary);
+            font-size: 0.55rem;
+            font-weight: 600;
+            padding: 0.05rem 0.45rem;
+            border-radius: 40px;
+        }
+        .nav-link.active .badge {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+        .dark .nav-link.active .badge {
+            background: #1E3A5F;
+            color: #60A5FA;
+        }
+        .sidebar-bottom {
+            padding: 0.75rem 1.25rem;
+            border-top: 1px solid var(--border-divider);
+            flex-shrink: 0;
+        }
+        .membership-card {
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 0.6rem 0.8rem;
+        }
+        .membership-card .label {
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .membership-card .value {
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: #2563EB;
+        }
+        .btn-upgrade {
+            width: 100%;
+            background: #2563EB;
+            color: #FFFFFF;
+            font-weight: 600;
+            font-size: 0.65rem;
+            padding: 0.35rem 0;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: background 0.15s ease, transform 0.15s ease;
+            margin-top: 0.4rem;
+        }
+        .btn-upgrade:hover {
+            background: #1D4ED8;
+            transform: scale(1.02);
+        }
+
+        /* ===== Main Content ===== */
+        .main-content {
+            margin-left: 250px;
+            margin-right: 280px;
+            background: var(--bg-page);
+            transition: margin-left 0.3s ease, background 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* ===== Top Header ===== */
+        .top-header {
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 0.8rem;
+            background: var(--bg-page);
+            flex-shrink: 0;
+        }
+        .top-header .left {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .top-header .left .hamburger {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: none;
+            transition: color 0.3s ease;
+        }
+        .top-header .left .hamburger:hover {
+            color: var(--text-primary);
+        }
+        .top-header .left .breadcrumb {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .top-header .left .breadcrumb span {
+            color: var(--text-secondary);
+        }
+        .top-header .left .page-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.3px;
+        }
+        .top-header .left .page-title .sub {
+            font-size: 0.6rem;
+            font-weight: 400;
+            color: var(--text-muted);
+            margin-left: 0.4rem;
+        }
+        .top-header .right {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .top-header .right .search-wrap {
+            position: relative;
+        }
+        .top-header .right .search-wrap input {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 40px;
+            padding: 0.25rem 0.6rem 0.25rem 1.8rem;
+            font-size: 0.65rem;
+            color: var(--text-primary);
+            width: 140px;
+            transition: all var(--transition);
+            outline: none;
+        }
+        .top-header .right .search-wrap input:focus {
+            border-color: #2563EB;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+        }
+        .top-header .right .search-wrap i {
+            position: absolute;
+            left: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.65rem;
+        }
+        .top-header .right .icon-btn {
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: color var(--transition), transform 0.15s ease;
+            font-size: 0.9rem;
+            position: relative;
+        }
+        .top-header .right .icon-btn:hover {
+            color: var(--text-primary);
+            transform: scale(1.05);
+        }
+        .top-header .right .icon-btn .dot {
+            position: absolute;
+            top: -2px;
+            right: -3px;
+            width: 6px;
+            height: 6px;
+            background: #EF4444;
+            border-radius: 50%;
+            border: 2px solid var(--bg-page);
+        }
+        .top-header .right .avatar-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .top-header .right .avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--bg-active);
+            color: #2563EB;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.6rem;
+            cursor: pointer;
+            border: 2px solid transparent;
+            background-size: cover;
+            background-position: center;
+        }
+        .top-header .right .avatar:hover {
+            border-color: #2563EB;
+        }
+        .top-header .right .avatar-wrap .name {
+            font-size: 0.65rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .unread-badge {
+            background: #2563EB;
+            color: white;
+            font-size: 0.55rem;
+            font-weight: 700;
+            padding: 0.1rem 0.5rem;
+            border-radius: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            transition: all var(--transition);
+            white-space: nowrap;
+        }
+        .unread-badge:hover {
+            background: #1D4ED8;
+            transform: scale(1.03);
+        }
+
+        /* ===== Conversation Header ===== */
+        .conv-header {
+            padding: 0.3rem 0.8rem;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+        }
+        .conv-header .left .name {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .conv-header .left .name .hash {
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+        .conv-header .left .desc {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+        }
+        .conv-header .right {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .conv-header .right .btn-sm {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 0.15rem 0.4rem;
+            font-size: 0.55rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.15rem;
+        }
+        .conv-header .right .btn-sm:hover {
+            border-color: #2563EB;
+            color: #2563EB;
+            background: var(--bg-active);
+        }
+        .conv-header .right .btn-sm i {
+            font-size: 0.5rem;
+        }
+
+        /* ===== Pinned Announcement ===== */
+        .pinned-announcement {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 0.4rem 0.8rem;
+            margin: 0.3rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-shrink: 0;
+            transition: background 0.3s ease, border-color 0.3s ease;
+            margin-left: 0.8rem;
+            margin-right: 0.8rem;
+        }
+        .pinned-announcement .pin-icon {
+            color: #F59E0B;
+            font-size: 0.7rem;
+            flex-shrink: 0;
+        }
+        .pinned-announcement .text {
+            flex: 1;
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+        }
+        .pinned-announcement .text strong {
+            color: var(--text-primary);
+        }
+        .pinned-announcement .btn-read {
+            font-size: 0.55rem;
+            color: #2563EB;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .pinned-announcement .btn-read:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== Messages Feed ===== */
+        .messages-feed {
+            flex: 1 1 0;
+            min-height: 0;
+            overflow-y: auto;
+            padding: 0.4rem 0.8rem;
+            scroll-behavior: smooth;
+        }
+        .messages-feed::-webkit-scrollbar {
+            width: 4px;
+        }
+        .messages-feed::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .messages-feed::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        /* ===== Date & Unread Dividers ===== */
+        .date-divider {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin: 0.5rem 0 0.3rem;
+        }
+        .date-divider .line {
+            flex: 1;
+            height: 1px;
+            background: var(--border-color);
+        }
+        .date-divider .label {
+            font-size: 0.55rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+        .unread-divider {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin: 0.4rem 0;
+        }
+        .unread-divider .line {
+            flex: 1;
+            height: 1px;
+            background: #2563EB;
+            opacity: 0.4;
+        }
+        .unread-divider .label {
+            font-size: 0.5rem;
+            font-weight: 600;
+            color: #2563EB;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            background: var(--bg-active);
+            padding: 0.05rem 0.5rem;
+            border-radius: 40px;
+        }
+
+        /* ===== Message ===== */
+        .message {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.3rem 0.4rem;
+            border-radius: var(--radius-sm);
+            transition: background var(--transition);
+            position: relative;
+        }
+        .message:hover {
+            background: var(--bg-hover);
+        }
+        .message .avatar-wrap {
+            position: relative;
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+        }
+        .message .avatar-wrap .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.7rem;
+            color: white;
+            flex-shrink: 0;
+            background-size: cover;
+            background-position: center;
+            background-color: #4F46E5;
+        }
+        .message .avatar-wrap .avatar.has-image {
+            background-size: cover;
+            background-position: center;
+        }
+        .message .avatar-wrap .avatar.initials {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .message .avatar-wrap .online-dot {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: 2px solid var(--bg-card);
+            background: #16A34A;
+        }
+        .message .avatar-wrap .online-dot.offline {
+            background: var(--text-muted);
+        }
+        .message .body {
+            flex: 1;
+            min-width: 0;
+        }
+        .message .body .header {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.05rem;
+        }
+        .message .body .header .username {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .message .body .header .username .staff-badge {
+            font-size: 0.45rem;
+            font-weight: 600;
+            color: #2563EB;
+            background: var(--bg-active);
+            padding: 0.02rem 0.25rem;
+            border-radius: 40px;
+            margin-left: 0.15rem;
+        }
+        .message .body .header .username .role-badge {
+            font-size: 0.4rem;
+            font-weight: 600;
+            padding: 0.02rem 0.25rem;
+            border-radius: 40px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .message .body .header .timestamp {
+            font-size: 0.5rem;
+            color: var(--text-muted);
+        }
+        .message .body .content {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+        .message .body .content .mention {
+            color: #2563EB;
+            font-weight: 500;
+            background: var(--bg-active);
+            padding: 0.05rem 0.25rem;
+            border-radius: 4px;
+        }
+        .message .body .content .hashtag {
+            color: #2563EB;
+            font-weight: 500;
+        }
+        .message .body .content strong {
+            color: var(--text-primary);
+        }
+        .message .body .content .testimonial-image {
+            margin-top: 0.3rem;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            max-width: 260px;
+            position: relative;
+            background: var(--bg-hover);
+        }
+        .message .body .content .testimonial-image img {
+            width: 100%;
+            display: block;
+            cursor: pointer;
+            transition: filter 0.2s ease;
+            max-height: 160px;
+            object-fit: cover;
+        }
+        .message .body .content .testimonial-image img:hover {
+            filter: brightness(0.95);
+        }
+        .message .body .content .testimonial-image .file-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            padding: 0.15rem 0.4rem;
+            font-size: 0.45rem;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .message .body .content .testimonial-image:hover .file-label {
+            opacity: 1;
+        }
+        .message .body .footer {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            margin-top: 0.1rem;
+            flex-wrap: wrap;
+        }
+        .message .body .footer .reactions {
+            display: flex;
+            align-items: center;
+            gap: 0.1rem;
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            border-radius: 40px;
+            padding: 0.05rem 0.25rem;
+            font-size: 0.55rem;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        .message .body .footer .reactions:hover {
+            border-color: #2563EB;
+            background: var(--bg-active);
+        }
+        .message .body .footer .reactions .emoji {
+            font-size: 0.6rem;
+        }
+        .message .body .footer .reactions .count {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .message .body .footer .reply-link {
+            font-size: 0.55rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.15rem;
+        }
+        .message .body .footer .reply-link:hover {
+            color: #2563EB;
+        }
+        .message .body .footer .thread-preview {
+            font-size: 0.55rem;
+            color: var(--text-muted);
+            background: var(--bg-hover);
+            padding: 0.05rem 0.35rem;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        .message .body .footer .thread-preview:hover {
+            background: var(--bg-active);
+            color: #2563EB;
+        }
+        .message .hover-actions {
+            position: absolute;
+            right: 0.3rem;
+            top: 0.2rem;
+            display: flex;
+            gap: 0.15rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 0.05rem 0.2rem;
+            box-shadow: var(--shadow-sm);
+            opacity: 0;
+            transition: opacity var(--transition);
+            pointer-events: none;
+        }
+        .message:hover .hover-actions {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .message .hover-actions button {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.55rem;
+            cursor: pointer;
+            padding: 0.05rem 0.15rem;
+            border-radius: var(--radius-sm);
+            transition: all var(--transition);
+        }
+        .message .hover-actions button:hover {
+            color: #2563EB;
+            background: var(--bg-active);
+        }
+
+        /* ===== Reply Preview ===== */
+        .reply-preview {
+            display: none;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.4rem 0.8rem;
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            margin: 0 0.8rem 0.4rem 0.8rem;
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+            box-shadow: var(--shadow-sm);
+        }
+        .reply-preview.show {
+            display: flex;
+        }
+        .reply-preview .avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.45rem;
+            color: white;
+            flex-shrink: 0;
+            background-size: cover;
+            background-position: center;
+        }
+        .reply-preview .text {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .reply-preview .text .name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .reply-preview .cancel {
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: color var(--transition);
+            padding: 0.1rem 0.2rem;
+            border-radius: var(--radius-sm);
+        }
+        .reply-preview .cancel:hover {
+            color: #EF4444;
+            background: var(--bg-hover);
+        }
+
+        /* ===== Typing Indicator ===== */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.15rem 0.8rem;
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            flex-shrink: 0;
+            min-height: 20px;
+        }
+        .typing-indicator .dots {
+            display: flex;
+            gap: 0.1rem;
+        }
+        .typing-indicator .dots span {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            animation: typingBounce 1.4s infinite;
+        }
+        .typing-indicator .dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .typing-indicator .dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        @keyframes typingBounce {
+            0%,
+            60%,
+            100% {
+                transform: translateY(0);
+                opacity: 0.4;
+            }
+            30% {
+                transform: translateY(-3px);
+                opacity: 1;
+            }
+        }
+
+        /* ===== COMPOSER (INPUT BAR) ===== */
+        .composer {
+            border-top: 1px solid var(--border-color);
+            padding: 0.5rem 0.8rem 0.6rem 0.8rem;
+            background: var(--bg-page);
+            flex-shrink: 0;
+            display: block !important;
+            position: relative;
+            z-index: 10;
+            min-height: 70px;
+        }
+        .composer .container {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 0.45rem 0.65rem;
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .composer .container:focus-within {
+            border-color: #2563EB;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+        }
+        .composer .input-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 0.3rem;
+            width: 100%;
+        }
+        .composer .input-row .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 0.05rem;
+            flex-shrink: 0;
+        }
+        .composer .input-row .toolbar button {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            cursor: pointer;
+            padding: 0.18rem 0.22rem;
+            border-radius: var(--radius-sm);
+            transition: all var(--transition);
+        }
+        .composer .input-row .toolbar button:hover {
+            color: #2563EB;
+            background: var(--bg-hover);
+        }
+        .composer .input-row textarea {
+            flex: 1;
+            border: none;
+            background: transparent;
+            resize: none;
+            font-size: 0.72rem;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            outline: none;
+            padding: 0.15rem 0;
+            min-height: 28px;
+            max-height: 100px;
+            line-height: 1.5;
+            width: 100%;
+        }
+        .composer .input-row textarea::placeholder {
+            color: var(--text-muted);
+        }
+        .composer .input-row .actions {
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+            flex-shrink: 0;
+        }
+        .composer .input-row .actions .btn-send {
+            background: #2563EB;
+            color: #FFFFFF;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 0.25rem 0.7rem;
+            font-size: 0.62rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s ease, transform 0.15s ease;
+        }
+        .composer .input-row .actions .btn-send:hover {
+            background: #1D4ED8;
+            transform: scale(1.03);
+        }
+        .composer-hint {
+            font-size: 0.48rem;
+            color: var(--text-muted);
+            text-align: right;
+            margin-top: 0.15rem;
+            opacity: 0.6;
+        }
+
+        /* ===== Right Sidebar ===== */
+        .right-sidebar {
+            width: 260px;
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100%;
+            overflow-y: auto;
+            background: var(--bg-page);
+            padding: 0.75rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            border-left: 1px solid var(--border-color);
+            z-index: 25;
+        }
+        .right-sidebar::-webkit-scrollbar {
+            width: 3px;
+        }
+        .right-sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .right-sidebar::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        .panel-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 0.8rem 1rem;
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .panel-card .card-title {
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .panel-card .card-title .more {
+            font-size: 0.5rem;
+            font-weight: 500;
+            color: #2563EB;
+            cursor: pointer;
+        }
+
+        /* ===== Online Members ===== */
+        .member-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.15rem 0.2rem;
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            transition: background var(--transition);
+        }
+        .member-item:hover {
+            background: var(--bg-hover);
+        }
+        .member-item .avatar {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.4rem;
+            color: white;
+            flex-shrink: 0;
+            position: relative;
+            background-size: cover;
+            background-position: center;
+        }
+        .member-item .avatar .online-dot {
+            position: absolute;
+            bottom: -1px;
+            right: -1px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            border: 2px solid var(--bg-card);
+            background: #16A34A;
+        }
+        .member-item .avatar .online-dot.offline {
+            background: var(--text-muted);
+        }
+        .member-item .name {
+            flex: 1;
+        }
+
+        /* ===== Trending ===== */
+        .trend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.1rem 0.2rem;
+            font-size: 0.6rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            transition: background var(--transition);
+        }
+        .trend-item:hover {
+            background: var(--bg-hover);
+        }
+        .trend-item .icon {
+            color: #F59E0B;
+            font-size: 0.55rem;
+            width: 0.8rem;
+            text-align: center;
+        }
+        .trend-item .info {
+            flex: 1;
+        }
+        .trend-item .info .name {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        .trend-item .info .meta {
+            font-size: 0.45rem;
+            color: var(--text-muted);
+        }
+
+        /* ===== Events ===== */
+        .event-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.2rem 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.6rem;
+        }
+        .event-item:last-child {
+            border-bottom: none;
+        }
+        .event-item .icon {
+            width: 24px;
+            height: 24px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-active);
+            color: #2563EB;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.5rem;
+            flex-shrink: 0;
+        }
+        .event-item .info {
+            flex: 1;
+        }
+        .event-item .info .name {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        .event-item .info .meta {
+            font-size: 0.45rem;
+            color: var(--text-muted);
+        }
+        .event-item .btn-register {
+            font-size: 0.45rem;
+            font-weight: 600;
+            color: #2563EB;
+            cursor: pointer;
+            background: var(--bg-active);
+            padding: 0.05rem 0.3rem;
+            border-radius: 40px;
+            border: none;
+            transition: all var(--transition);
+        }
+        .event-item .btn-register:hover {
+            background: #DBEAFE;
+        }
+
+        /* ===== Stats ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.2rem;
+        }
+        .stats-grid .stat {
+            text-align: center;
+            padding: 0.15rem 0;
+            background: var(--bg-hover);
+            border-radius: var(--radius-sm);
+        }
+        .stats-grid .stat .num {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .stats-grid .stat .label {
+            font-size: 0.45rem;
+            color: var(--text-muted);
+        }
+
+        /* ===== AI Widget (Draggable) ===== */
+        .ai-widget {
+            position: fixed;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            padding: 0.6rem 0.8rem;
+            width: 220px;
+            z-index: 50;
+            cursor: grab;
+            user-select: none;
+        }
+        .ai-widget:active {
+            cursor: grabbing;
+        }
+        .ai-widget:hover {
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+        .ai-widget .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.3rem;
+        }
+        .ai-widget .header .title {
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+        }
+        .ai-widget .header .title i {
+            color: #2563EB;
+        }
+        .ai-widget .header .status {
+            font-size: 0.4rem;
+            font-weight: 600;
+            color: #16A34A;
+            display: flex;
+            align-items: center;
+            gap: 0.15rem;
+        }
+        .ai-widget .header .status .dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #16A34A;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+        .ai-widget .suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.15rem;
+            margin-bottom: 0.3rem;
+        }
+        .ai-widget .suggestions .pill {
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            border-radius: 40px;
+            padding: 0.05rem 0.35rem;
+            font-size: 0.45rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all var(--transition);
+            white-space: nowrap;
+        }
+        .ai-widget .suggestions .pill:hover {
+            border-color: #2563EB;
+            background: var(--bg-active);
+            color: #2563EB;
+        }
+        .ai-widget .btn-ask {
+            width: 100%;
+            background: #2563EB;
+            color: #FFFFFF;
+            font-weight: 600;
+            font-size: 0.55rem;
+            padding: 0.2rem 0;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: background 0.15s ease, transform 0.15s ease;
+        }
+        .ai-widget .btn-ask:hover {
+            background: #1D4ED8;
+            transform: scale(1.02);
+        }
+
+        /* ===== AI Modal ===== */
+        .ai-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        .ai-modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .ai-modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            width: 440px;
+            max-width: 92vw;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            transform: translateY(20px) scale(0.96);
+            transition: transform 0.25s ease;
+            overflow: hidden;
+        }
+        .ai-modal-overlay.active .ai-modal {
+            transform: translateY(0) scale(1);
+        }
+        .ai-modal .ai-modal-header {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid var(--border-divider);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            background: var(--bg-sidebar);
+        }
+        .ai-modal .ai-modal-header .ai-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: var(--text-primary);
+        }
+        .ai-modal .ai-modal-header .ai-title .ai-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4F46E5, #7C3AED);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.7rem;
+        }
+        .ai-modal .ai-modal-header .ai-status {
+            font-size: 0.5rem;
+            font-weight: 600;
+            color: #16A34A;
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+        }
+        .ai-modal .ai-modal-header .ai-status .dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #16A34A;
+            animation: pulse 2s infinite;
+        }
+        .ai-modal .ai-modal-header .ai-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 0.2rem;
+            border-radius: var(--radius-sm);
+            transition: all var(--transition);
+        }
+        .ai-modal .ai-modal-header .ai-close:hover {
+            color: var(--text-primary);
+            background: var(--bg-hover);
+        }
+        .ai-modal .ai-modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.6rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-height: 350px;
+            background: var(--bg-page);
+        }
+        .ai-modal .ai-modal-body .ai-msg {
+            display: flex;
+            gap: 0.4rem;
+            font-size: 0.68rem;
+            line-height: 1.5;
+            animation: fadeInUp 0.3s ease;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .ai-modal .ai-modal-body .ai-msg.user .bubble {
+            background: #2563EB;
+            color: #FFFFFF;
+            border-radius: 14px 14px 4px 14px;
+            padding: 0.4rem 0.7rem;
+            margin-left: auto;
+            max-width: 80%;
+        }
+        .ai-modal .ai-modal-body .ai-msg.ai .bubble {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 14px 14px 14px 4px;
+            padding: 0.4rem 0.7rem;
+            max-width: 85%;
+        }
+        .ai-modal .ai-modal-body .ai-msg.ai .bubble .ai-label {
+            font-size: 0.45rem;
+            font-weight: 600;
+            color: #7C3AED;
+            margin-bottom: 0.1rem;
+        }
+        .ai-modal .ai-modal-footer {
+            padding: 0.5rem 0.6rem;
+            border-top: 1px solid var(--border-divider);
+            flex-shrink: 0;
+            background: var(--bg-sidebar);
+        }
+        .ai-modal .ai-modal-footer .ai-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.2rem;
+            margin-bottom: 0.4rem;
+        }
+        .ai-modal .ai-modal-footer .ai-suggestions .pill {
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            border-radius: 40px;
+            padding: 0.08rem 0.4rem;
+            font-size: 0.5rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all var(--transition);
+            white-space: nowrap;
+        }
+        .ai-modal .ai-modal-footer .ai-suggestions .pill:hover {
+            border-color: #7C3AED;
+            background: var(--bg-active);
+            color: #7C3AED;
+        }
+        .ai-modal .ai-modal-footer .ai-input-row {
+            display: flex;
+            gap: 0.3rem;
+        }
+        .ai-modal .ai-modal-footer .ai-input-row input {
+            flex: 1;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 40px;
+            padding: 0.3rem 0.7rem;
+            font-size: 0.65rem;
+            color: var(--text-primary);
+            outline: none;
+            transition: border-color var(--transition);
+        }
+        .ai-modal .ai-modal-footer .ai-input-row input:focus {
+            border-color: #7C3AED;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.08);
+        }
+        .ai-modal .ai-modal-footer .ai-input-row .btn-ai-send {
+            background: #7C3AED;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            font-size: 0.6rem;
+            transition: all var(--transition);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ai-modal .ai-modal-footer .ai-input-row .btn-ai-send:hover {
+            background: #6D28D9;
+            transform: scale(1.05);
+        }
+        .ai-modal .ai-modal-footer .btn-ai-cancel {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            border-radius: var(--radius-sm);
+            padding: 0.3rem 0.8rem;
+            font-size: 0.65rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition);
+            margin-left: 0.3rem;
+        }
+        .ai-modal .ai-modal-footer .btn-ai-cancel:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        /* ===== Toast ===== */
+        .toast-notification {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.4rem 0.8rem;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            font-size: 0.7rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 200;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            pointer-events: none;
+            max-width: 90%;
+        }
+        .toast-notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .toast-notification i {
+            color: #16A34A;
+            font-size: 0.8rem;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 1200px) {
+            .right-sidebar {
+                display: none;
+            }
+            .main-content {
+                margin-right: 0;
+            }
+        }
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.3);
+                z-index: 39;
+            }
+            .sidebar-overlay.active {
+                display: block;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 0 0.75rem 0.75rem 0.75rem;
+            }
+            .top-header .left .hamburger {
+                display: block;
+            }
+            .top-header .left .breadcrumb {
+                display: none;
+            }
+            .top-header .left .page-title .sub {
+                display: none;
+            }
+            .top-header .right .search-wrap {
+                display: none;
+            }
+            .top-header .right .avatar-wrap .name {
+                display: none;
+            }
+            .right-sidebar {
+                display: none;
+            }
+        }
+        @media (max-width: 640px) {
+            .top-header .left .page-title {
+                font-size: 0.85rem;
+            }
+            .message .body .content {
+                font-size: 0.75rem;
+            }
+            .composer .input-row .toolbar button {
+                font-size: 0.6rem;
+                padding: 0.1rem 0.15rem;
+            }
+            .composer .input-row textarea {
+                font-size: 0.65rem;
+                min-height: 22px;
+                max-height: 80px;
+            }
+            .ai-widget {
+                width: 180px;
+            }
+        }
+
+        .dark .composer .container {
+            background: #1E293B;
+            border-color: #334155;
+        }
+        .dark .composer .input-row textarea {
+            color: #F1F5F9;
+        }
+        .dark .ai-modal {
+            background: #1E293B;
+            border-color: #334155;
+        }
+        .dark .ai-modal .ai-modal-header {
+            background: #1E293B;
+        }
+        .dark .ai-modal .ai-modal-body {
+            background: #0F172A;
+        }
+        .dark .ai-modal .ai-modal-body .ai-msg.ai .bubble {
+            background: #1E293B;
+            border-color: #334155;
+            color: #F1F5F9;
+        }
+        .dark .ai-modal .ai-modal-footer {
+            background: #1E293B;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- ============================================================ -->
+    <!-- SIDEBAR (Dashboard style)                                    -->
+    <!-- ============================================================ -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="logo-icon">SA</div>
+            <span>Solo AI</span>
+        </div>
+        <div class="sidebar-user">
+            <div class="avatar" id="sidebarAvatar">DL</div>
+            <div class="info">
+                <div class="name" id="sidebarName">Damian Lee</div>
+                <div class="plan"><span class="dot"></span> Free Plan</div>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="section-label">Main</div>
+            <a class="nav-link" href="dashboard.html"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a class="nav-link" href="ai-studio.html"><i class="fas fa-sparkles"></i> AI Studio</a>
+            <a class="nav-link" href="content.html"><i class="fas fa-folder"></i> Content</a>
+            <a class="nav-link" href="publishing.html"><i class="fas fa-calendar-alt"></i> Publishing</a>
+            <a class="nav-link" href="analytics.html"><i class="fas fa-chart-line"></i> Analytics</a>
+            <a class="nav-link active" href="community.html"><i class="fas fa-users"></i> Community <span class="badge">24</span></a>
+            <a class="nav-link" href="courses.html"><i class="fas fa-graduation-cap"></i> Courses</a>
+            <a class="nav-link" href="marketplace.html"><i class="fas fa-store"></i> Marketplace <span class="badge">12</span></a>
+            <a class="nav-link" href="support.html"><i class="fas fa-headset"></i> Support <span class="badge">4</span></a>
+            <a class="nav-link" href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+        </nav>
+        <div class="sidebar-bottom">
+            <div class="membership-card">
+                <div class="flex items-center justify-between">
+                    <span class="label">Membership</span>
+                    <span class="value">Free</span>
+                </div>
+                <button class="btn-upgrade" onclick="window.location.href='marketplace.html'">⬆ View Plans</button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ============================================================ -->
+    <!-- MAIN CONTENT                                                  -->
+    <!-- ============================================================ -->
+    <div class="main-content" id="mainContent">
+
+        <!-- TOP HEADER -->
+        <header class="top-header">
+            <div class="left">
+                <div class="hamburger" id="menuToggle"><i class="fas fa-bars"></i></div>
+                <div class="breadcrumb">Dashboard / <span>Community</span></div>
+                <div class="page-title">
+                    Community
+                    <span class="sub">Connect with creators, collaborate, and grow together.</span>
+                </div>
+            </div>
+            <div class="right">
+                <span class="unread-badge" id="unreadBadge" style="display:none;">
+                    <i class="fas fa-arrow-down"></i> <span id="unreadCount">0</span> new
+                </span>
+                <div class="search-wrap">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search..." id="globalSearch" />
+                </div>
+                <div class="icon-btn" id="notifBtn">
+                    <i class="fas fa-bell"></i>
+                    <span class="dot"></span>
+                </div>
+                <div class="icon-btn" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </div>
+                <div class="avatar-wrap">
+                    <div class="avatar" id="headerAvatar">DL</div>
+                    <span class="name" id="headerName">Damian</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- CONVERSATION HEADER -->
+        <div class="conv-header">
+            <div class="left">
+                <div class="name"><span class="hash">#</span> general</div>
+                <div class="desc">A place for creators to share ideas, ask questions, and learn together.</div>
+            </div>
+            <div class="right">
+                <button class="btn-sm"><i class="fas fa-thumbtack"></i> <span>Pinned</span></button>
+                <button class="btn-sm"><i class="fas fa-users"></i> <span>Members</span></button>
+                <button class="btn-sm"><i class="fas fa-user-plus"></i> <span>Invite</span></button>
+                <button class="btn-sm"><i class="fas fa-cog"></i></button>
+            </div>
+        </div>
+
+        <!-- PINNED ANNOUNCEMENT -->
+        <div class="pinned-announcement">
+            <span class="pin-icon"><i class="fas fa-thumbtack"></i></span>
+            <span class="text"><strong>Solo AI v3.2</strong> is now available — New AI templates, improved publishing calendar, and enhanced analytics.</span>
+            <span class="btn-read">Read More</span>
+            <span style="font-size:0.5rem;color:var(--text-muted);cursor:pointer;">View All Pinned</span>
+        </div>
+
+        <!-- MESSAGES FEED -->
+        <div class="messages-feed" id="messagesFeed">
+            <!-- Rendered by JavaScript -->
+        </div>
+
+        <!-- TYPING INDICATOR -->
+        <div class="typing-indicator" id="typingIndicator">
+            <span id="typingText">Sophia Carter is typing...</span>
+            <span class="dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </span>
+        </div>
+
+        <!-- REPLY PREVIEW -->
+        <div class="reply-preview" id="replyPreview">
+            <div class="avatar" id="replyAvatar" style="background:#4F46E5;">SC</div>
+            <span class="text" id="replyText">Replying to <span class="name">Sophia Carter</span>: "..."</span>
+            <span class="cancel" id="cancelReply"><i class="fas fa-times"></i></span>
+        </div>
+
+        <!-- COMPOSER (INPUT BAR) -->
+        <div class="composer" id="composer">
+            <div class="container">
+                <div class="input-row">
+                    <div class="toolbar">
+                        <button title="Emoji" id="emojiBtn"><i class="far fa-smile"></i></button>
+                        <button title="GIF"><i class="fas fa-gif"></i></button>
+                        <button title="Image"><i class="fas fa-image"></i></button>
+                        <button title="Attach"><i class="fas fa-paperclip"></i></button>
+                        <button title="Mention"><i class="fas fa-at"></i></button>
+                        <button title="Code"><i class="fas fa-code"></i></button>
+                        <button title="Poll"><i class="fas fa-poll"></i></button>
+                        <button title="Voice"><i class="fas fa-microphone"></i></button>
+                    </div>
+                    <textarea rows="1" placeholder="Share your thoughts with the community..." id="messageInput"></textarea>
+                    <div class="actions">
+                        <button class="btn-send" id="sendBtn"><i class="fas fa-paper-plane"></i> Send</button>
+                    </div>
+                </div>
+            </div>
+            <div class="composer-hint">Press <strong>Enter</strong> to send · <strong>Shift+Enter</strong> for new line · <strong>Ctrl+N</strong> to focus</div>
+        </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- RIGHT SIDEBAR                                                 -->
+    <!-- ============================================================ -->
+    <div class="right-sidebar" id="rightSidebar">
+
+        <!-- Online Members -->
+        <div class="panel-card">
+            <div class="card-title">Online Members <span class="more">View All</span></div>
+            <div id="onlineMembersList">
+                <!-- Rendered by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Trending Discussions -->
+        <div class="panel-card">
+            <div class="card-title">Trending Discussions <span class="more">View All</span></div>
+            <div class="trend-item">
+                <span class="icon"><i class="fas fa-fire"></i></span>
+                <div class="info"><div class="name">Best YouTube Hook Formula</div><div class="meta">142 replies · 2h ago</div></div>
+            </div>
+            <div class="trend-item">
+                <span class="icon"><i class="fas fa-fire"></i></span>
+                <div class="info"><div class="name">Instagram Carousel Tips</div><div class="meta">98 replies · 4h ago</div></div>
+            </div>
+            <div class="trend-item">
+                <span class="icon"><i class="fas fa-fire"></i></span>
+                <div class="info"><div class="name">AI Prompt Engineering</div><div class="meta">76 replies · 6h ago</div></div>
+            </div>
+            <div class="trend-item">
+                <span class="icon"><i class="fas fa-fire"></i></span>
+                <div class="info"><div class="name">TikTok Growth Strategy</div><div class="meta">64 replies · 8h ago</div></div>
+            </div>
+            <div class="trend-item">
+                <span class="icon"><i class="fas fa-fire"></i></span>
+                <div class="info"><div class="name">LinkedIn Personal Branding</div><div class="meta">53 replies · 12h ago</div></div>
+            </div>
+        </div>
+
+        <!-- Upcoming Events -->
+        <div class="panel-card">
+            <div class="card-title">Upcoming Events <span class="more">View All</span></div>
+            <div class="event-item">
+                <div class="icon"><i class="fas fa-video"></i></div>
+                <div class="info"><div class="name">Creator Webinar</div><div class="meta">Feb 12 · 2:00 PM</div></div>
+                <button class="btn-register">Register</button>
+            </div>
+            <div class="event-item">
+                <div class="icon"><i class="fas fa-users"></i></div>
+                <div class="info"><div class="name">Live Q&A Session</div><div class="meta">Feb 15 · 10:00 AM</div></div>
+                <button class="btn-register">Register</button>
+            </div>
+            <div class="event-item">
+                <div class="icon"><i class="fas fa-robot"></i></div>
+                <div class="info"><div class="name">AI Workshop</div><div class="meta">Feb 18 · 4:00 PM</div></div>
+                <button class="btn-register">Register</button>
+            </div>
+            <div class="event-item">
+                <div class="icon"><i class="fas fa-comment"></i></div>
+                <div class="info"><div class="name">Feedback Session</div><div class="meta">Feb 20 · 1:00 PM</div></div>
+                <button class="btn-register">Register</button>
+            </div>
+        </div>
+
+        <!-- Community Statistics -->
+        <div class="panel-card">
+            <div class="card-title">Community Stats</div>
+            <div class="stats-grid">
+                <div class="stat"><div class="num">150</div><div class="label">Members</div></div>
+                <div class="stat"><div class="num" id="onlineCount">482</div><div class="label">Online</div></div>
+                <div class="stat"><div class="num">18</div><div class="label">Channels</div></div>
+                <div class="stat"><div class="num">6.9K</div><div class="label">Discussions</div></div>
+                <div class="stat"><div class="num">325</div><div class="label">Resources</div></div>
+                <div class="stat"><div class="num">52</div><div class="label">Experts</div></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- AI COMMUNITY ASSISTANT (DRAGGABLE)                            -->
+    <!-- ============================================================ -->
+    <div class="ai-widget" id="aiWidget" style="right:1rem; bottom:1rem; left:auto; top:auto;">
+        <div class="header">
+            <div class="title"><i class="fas fa-robot"></i> Community AI</div>
+            <div class="status"><span class="dot"></span> Online</div>
+        </div>
+        <div class="suggestions">
+            <span class="pill" data-action="summarize">Summarize discussion</span>
+            <span class="pill" data-action="find">Find conversations</span>
+            <span class="pill" data-action="suggest">Suggest channel</span>
+            <span class="pill" data-action="answer">Answer with AI</span>
+            <span class="pill" data-action="starter">Starter</span>
+        </div>
+        <button class="btn-ask" id="aiAskBtn"><i class="fas fa-comment"></i> Ask AI</button>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- AI CHAT MODAL                                                 -->
+    <!-- ============================================================ -->
+    <div class="ai-modal-overlay" id="aiModalOverlay">
+        <div class="ai-modal" id="aiModal">
+            <div class="ai-modal-header">
+                <div class="ai-title">
+                    <div class="ai-avatar"><i class="fas fa-robot"></i></div>
+                    <span>Community AI Assistant</span>
+                </div>
+                <div class="ai-status"><span class="dot"></span> Online</div>
+                <button class="ai-close" id="aiModalClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="ai-modal-body" id="aiModalBody">
+                <div class="ai-msg ai">
+                    <div class="bubble">
+                        <div class="ai-label">🤖 AI Assistant</div>
+                        Hey! I'm your community AI. I can summarize discussions, find conversations, suggest channels, and answer any questions about Solo AI. What can I help with?
+                    </div>
+                </div>
+            </div>
+            <div class="ai-modal-footer">
+                <div class="ai-suggestions" id="aiModalSuggestions">
+                    <span class="pill">Summarize latest discussions</span>
+                    <span class="pill">How to grow on YouTube?</span>
+                    <span class="pill">Best AI Studio templates</span>
+                    <span class="pill">Publishing tips</span>
+                </div>
+                <div class="ai-input-row">
+                    <input type="text" placeholder="Ask me anything about Solo AI..." id="aiModalInput" />
+                    <button class="btn-ai-send" id="aiModalSend"><i class="fas fa-paper-plane"></i></button>
+                    <button class="btn-ai-cancel" id="aiModalCancel">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PROFILE LOADER                                               -->
+    <!-- ============================================================ -->
+    <script src="assets/js/profile-loader.js"></script>
+
+    <!-- ============================================================ -->
+    <!-- SCRIPTS                                                       -->
+    <!-- ============================================================ -->
+    <script>
+        (function() {
+
+            // ===== THEME =====
+            const themeToggle = document.getElementById('themeToggle');
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+                themeToggle.querySelector('i').className = 'fas fa-sun';
+            }
+            themeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark');
+                const isDark = document.body.classList.contains('dark');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                this.querySelector('i').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+            });
+
+            // ===== SIDEBAR & OVERLAY =====
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const menuToggle = document.getElementById('menuToggle');
+
+            menuToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('active');
+            });
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                    document.getElementById('aiModalOverlay').classList.remove('active');
+                }
+            });
+
+            // ===== TOAST =====
+            let toastTimeout;
+
+            function showToast(msg, icon = 'fa-check-circle') {
+                const existing = document.querySelector('.toast-notification');
+                if (existing) existing.remove();
+                clearTimeout(toastTimeout);
+                const toast = document.createElement('div');
+                toast.className = 'toast-notification';
+                toast.innerHTML =
+                    `<i class="fas ${icon}"></i><span>${msg}</span><button class="close" style="background:none;border:none;color:var(--text-muted);cursor:pointer;padding:0 0 0 0.3rem;font-size:0.65rem;transition:color var(--transition);pointer-events:auto;">&times;</button>`;
+                document.body.appendChild(toast);
+                requestAnimationFrame(() => toast.classList.add('show'));
+                toast.querySelector('.close').addEventListener('click', () => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                });
+                toastTimeout = setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3500);
+            }
+
+            document.getElementById('notifBtn').addEventListener('click', function() {
+                showToast('🔔 3 new notifications', 'fa-bell');
+            });
+
+            // ================================================================
+            // ===== 150 CREATORS: 74 AVATARS + 76 GLOBAL NAMES =====
+            // ================================================================
+            const roles = ['creator', 'expert', 'moderator', 'admin', 'creator', 'creator', 'expert', 'moderator', 'creator',
+                'staff'
+            ];
+            const nonAdminRoles = roles.filter(role => role !== 'admin');
+
+            const userColors = ['#4F46E5', '#2563EB', '#16A34A', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#14B8A6', '#0EA5E9',
+                '#F97316'
+            ];
+
+            // ----- 74 AVATAR FILENAMES (YOUR UPLOADS) -----
+            const avatarFilenames = [
+                "odulami_daniel.jpg", "emk_baggio.jpg", "innocent.jpg", "martje_rose.jpg",
+                "charles_jones.jpg", "juanita_chavez.jpg", "andre.jpg", "mark_jerke.jpg",
+                "victoria_kern.jpg", "jay_sterling.jpg", "kiki_jodesty.jpg", "moulton.jpg",
+                "micheal.jpg", "juanita.jpg", "jay.jpg", "holly_wolly.jpg",
+                "shawn_collegian.jpg", "ethan_fletcher.jpg", "james_townsend.jpg", "tommy_jessie.jpg",
+                "mason_cleverly.jpg", "angel_camacho.jpg", "colitha_brown.jpg", "jaxon_barkle.jpg",
+                "jamila.jpg", "calico.jpg", "kia_ross.jpg", "camcam_studios.jpg",
+                "lean_bennett.jpg", "justin_hazelton.jpg", "chris_gasper.jpg", "bmicheal_dee.jpg",
+                "bridget_surgott.jpg", "lisa_rice.jpg", "danny_walker.jpg", "manu_pi_parra.jpg",
+                "larry_sayler.jpg", "kimberly_wylie.jpg", "renne_haith.jpg", "recio.jpg",
+                "arlo_ramsey.jpg", "vicki_fralix.jpg", "malikque_collection.jpg", "auds.jpg",
+                "lynette_glover.jpg", "stephen_williams.jpg", "ben_denham.jpg", "christian_bennert.jpg",
+                "chante_osborne.jpg", "justin_friedmeyer.jpg", "sunny_crosse.jpg", "samantha_berlandi.jpg",
+                "ashley_charlebois.jpg", "wyanet_shareef.jpg", "taneecka_rashaweed.jpg", "flash_griego.jpg",
+                "makayla_freeman.jpg", "april_lawton.jpg", "salvador_martinez.jpg", "sandy_rosenthal.jpg",
+                "kat_momo.jpg", "steve_walker.jpg", "laura_dilley.jpg", "ann_meyers.jpg",
+                "daniel_m_soliven.jpg", "tammy_smith.jpg", "ashlynn_noh.jpg", "jenni_pine_corza.jpg",
+                "julien_attenoux.jpg", "jodi_adelsgruber.jpg", "chris_neak.jpg", "adrianne_philips.jpg",
+                "rylan_jarrell.jpg", "yolana_bracey_thompson.jpg"
+            ];
+
+            // ----- 76 CURATED GLOBAL FALLBACK NAMES (No avatars) -----
+            const globalFallbackNames = [
+                "Chidi Okonkwo", "Ngozi Eze", "Adebayo Ogunlesi", "Funmi Adeyemi",
+                "Emeka Okafor", "Zainab Bello", "Tunde Bakare", "Amara Eze",
+                "Kemi Adetokunbo", "Oluchi Nwosu",
+                "Yuki Tanaka", "Haruto Sato", "Sakura Kobayashi", "Ren Yamamoto",
+                "Priya Sharma", "Arjun Patel", "Ananya Reddy", "Rohan Mehta",
+                "Sophie Moreau", "Luc Dubois", "Camille Lefevre",
+                "Javier Hernandez", "Isabella Flores", "Mateo Reyes",
+                "Lucas Silva", "Ana Costa", "Rafael Santos",
+                "Ahmed Hassan", "Layla Ibrahim", "Omar Farouk",
+                "Klaus Weber", "Greta Schmidt",
+                "Marco Rossi", "Elena Bianchi",
+                "Min-jun Park", "Soo-ah Lee",
+                "Wei Zhang", "Mei Lin",
+                "Dmitri Ivanov", "Natasha Volkov",
+                "Thabo Mbeki", "Zanele Dlamini",
+                "Kwame Asare", "Abena Osei",
+                "Wanjiru Mwangi", "Otieno Odhiambo",
+                "Anna Kowalski", "Piotr Wisniewski",
+                "Carmen Garcia", "Luis Fernandez",
+                "Aisha Al-Fayed", "Khalid Al-Rashid",
+                "Soraya Nazari", "Farhad Ahmadi",
+                "Oksana Petrenko", "Bogdan Ionescu",
+                "Eleni Papadopoulos", "Nikos Christou",
+                "Fatima Al-Zahra", "Youssef Benali",
+                "Mette Andersen", "Lars Jensen",
+                "Samir Khoury", "Cem Yilmaz",
+                "Ceyda Aydin", "Dewi Sukarno",
+                "Nguyen Minh Anh", "Tran Van Duc",
+                "Isabella Cruz", "Mikael Johansson",
+                "Ingrid Bergström", "Dario Almeida",
+                "Sofia Papadakis", "Erik Lundqvist"
+            ];
+
+            // ----- NATURAL CREATOR TRAITS (NO EMOJIS) -----
+            const creatorTraits = [
+                "Video Strategist", "Visual Storyteller", "Copywriting Guru",
+                "Analytics Nerd", "Growth Hacker", "Brand Architect",
+                "Short-Form Expert", "Podcast Host", "Scriptwriter",
+                "Creative Visionary", "Trend Spotter", "SEO Specialist",
+                "Community Builder", "AI Content Pioneer", "Engagement Pro",
+                "Graphic Designer", "Film Editor", "Mobile Creator",
+                "Global Marketer", "Course Creator", "Futurist Thinker",
+                "Storyteller", "Viral Content King", "Mindset Coach"
+            ];
+
+            const tagPool = [
+                "#YouTube", "#Instagram", "#TikTok", "#Twitter", "#LinkedIn",
+                "#Podcast", "#Blogging", "#SEO", "#VideoEditing", "#ContentMarketing",
+                "#Branding", "#Influencer", "#Ecommerce", "#NFT", "#AIArt",
+                "#Filmmaking", "#Photography", "#Startup", "#BusinessCoach",
+                "#Fitness", "#Travel", "#Foodie", "#Gaming", "#Fashion",
+                "#TechReview", "#Motivation", "#Finance", "#Crypto", "#Music"
+            ];
+
+            // ================================================================
+            // ===== MESSAGE POOLS (Raw & Diverse) =====
+            // ================================================================
+            const MESSAGE_POOL = [
+                "just hit 10k subscribers using the AI script generator!",
+                "the thumbnail ai increased my ctr from 4% to 18% in one week. insane.",
+                "my first 100 sales are in! thank you to everyone in this community",
+                "i was stuck at 500 followers for months, then i used the hook generator and went viral",
+                "finally made my first $100 online. feeling blessed right now.",
+                "went from zero to 5k views on my latest short. the analytics helped me figure out the best time to post.",
+                "i literally saved 20 hours this week with the auto caption tool. game changer.",
+                "honestly, the SEO suggestions are better than half the paid tools out there",
+                "just got accepted into the partner program! all thanks to solo ai",
+                "i've been trying to grow my podcast for 2 years. 2 months on this platform and i've doubled my audience.",
+                "the ai rewriter saved my script. my audience retention went up 30%",
+                "i'm not a tech person, but this platform is so easy to use. even my grandma could do it lol",
+                "my latest faceless channel hit 1k subs in 2 weeks. y'all are sleeping on the automation feature",
+                "does anyone know how to fix the audio sync issue? it's driving me crazy",
+                "is the live streaming feature still in beta? i can't seem to find it",
+                "the publishing calendar is broken for me rn. keeps scheduling for 3am instead of 3pm",
+                "yo @Dave Nick, the mobile app keeps crashing when i try to export 4k. any fix?",
+                "how do i add custom watermarks to my videos? i'm blind and can't find the setting",
+                "does the ai studio support vertical video editing for tiktok yet? or do i still have to use capcut?",
+                "i think there's a bug with the hashtag generator, it's giving me random numbers sometimes",
+                "has anyone else noticed the rendering speed slowed down after the last update?",
+                "why can't i add more than 3 team members on the basic plan? feels super limiting",
+                "the scheduling tool doesn't connect to my instagram business account. help pls",
+                "can we please get a dark mode for the web dashboard? my eyes are bleeding",
+                "it's taking forever to process my video. is there a size limit i missed?",
+                "what are we all eating for lunch today? i need ideas",
+                "who else is staying up late to edit tonight? ☕️",
+                "i love how supportive everyone is in here. literally the only reason i'm still creating content",
+                "lol i just spent 3 hours editing a 30 second video. worth it tho",
+                "someone pls tell me to stop scrolling and start filming",
+                "anyone else feel like the algorithm is against them today? or just me?",
+                "this is the best investment i made all year. period.",
+                "shout out to everyone who gave me feedback on my last post. y'all are legends",
+                "imagine paying for canva when you have this for free. couldn't be me",
+                "i can't believe i used to do all this manually. what was i thinking",
+                "does anyone wanna collab? i do gaming content and need a duo",
+                "currently procrastinating on my next video. send motivation",
+                "i literally refreshed the page 10 times waiting for the new update",
+                "y'all are too talented in here, making me feel like i need to step up my game",
+                "what camera do you guys use for your talking head shots?",
+                "i'm thinking of switching from final cut to davinci. thoughts?",
+                "where do you guys get your background music from?",
+                "i just started a newsletter, any tips to grow it?",
+                "what's the best time to post on instagram these days?",
+                "anyone here using the faceless youtube strategy? got questions",
+                "i'm planning a 30-day challenge for my channel. wish me luck",
+                "how often do you guys post? i'm trying to be consistent but it's hard",
+                "i feel like my engagement drops if i don't post reels every day. is that normal?",
+                "do you guys script your videos or just wing it?",
+                "i'm trying to build a personal brand but i'm scared of being judged tbh",
+                "the engagement in this channel is unmatched. never leaving",
+                "i just love waking up to notifications from this community",
+                "lmaooo i literally did the same thing last week",
+                "fr fr this is the best thread i've seen all day",
+                "broo stop flexing on us",
+                "deadass?? no way",
+                "say less, i'm trying this tomorrow",
+                "bet. let me know how it goes",
+                "sheesh, you're killing the game",
+                "ngl i'm lowkey jealous of your setup",
+                "rip my notifications inbox",
+                "i see you @emk_baggio, always dropping gems",
+                "we're witnessing greatness right here",
+                "this aged well",
+                "i've been analyzing my analytics for 3 hours and i finally cracked the code",
+                "the secret to going viral is literally just consistency and good thumbnails",
+                "stop trying to be perfect. just post. that's the best advice i ever got",
+                "i'm testing a new strategy where i post 3 times a day for 30 days. i'll report back",
+                "highly recommend the faceless niche if you're camera shy. it works",
+                "does anyone else struggle with writer's block? i feel like i'm out of ideas",
+                "i'm building a content calendar right now. this tool makes it so easy",
+                "i honestly think the algorithm favors people who use the AI studio. prove me wrong",
+                "going live in 10 mins, come support me if you're free",
+                "just finished my 5th video of the week. feeling accomplished"
+            ];
+
+            const REPLY_POOL = [
+                "fr fr that's what i'm saying!",
+                "dude ikr, i was just about to say that",
+                "so true, this is exactly what i needed to hear",
+                "appreciate you bro, this is gold",
+                "wait actually?? i have to try that now",
+                "lmaooo not the random cat stepping on the keyboard",
+                "bro you're cooking with this one",
+                "having the same issue, restart fixed it for me",
+                "i literally just solved this 5 mins ago. check dms",
+                "facts. i been saying this for months",
+                "bold of you to assume i have that kinda time",
+                "this deserves way more likes tbh",
+                "preach!! take my money already",
+                "count me in, i'm definitely going",
+                "mind blown i never thought of it that way",
+                "ngl this is the most useful post i've seen today",
+                "real ones know what you're talking about",
+                "somebody give this guy a medal",
+                "wtf i didn't know it could do that. game changer.",
+                "bro you just saved my entire channel with that tip",
+                "i wish i read this 6 months ago",
+                "yo @Dave_Nick get in here and see this",
+                "couldn't have said it better myself",
+                "upvoting because everyone needs to see this"
+            ];
+
+            // ----- ADMIN SPECIFIC REPLIES (Dave Nick) -----
+            const ADMIN_REPLY_POOL = [
+                "Great insight! Keep pushing, consistency is key.",
+                "I'm here to help. What's your biggest challenge right now?",
+                "Love seeing the community share wins. Keep them coming!",
+                "Pro tip: use the AI Studio's hook generator to boost engagement. It works wonders.",
+                "Have you tried the new analytics dashboard? It gives deep insights into your audience.",
+                "Remember, growth takes time. Stay patient and keep creating.",
+                "If you need personalized feedback, drop your content link and I'll take a look.",
+                "We're building new features based on your feedback. Keep sharing ideas!",
+                "As founder, I'm proud of this community. You all inspire me daily.",
+                "Make sure to check the pinned resources – there's a lot of value there."
+            ];
+
+            // ----- AI CONTEXTUAL RESPONSES -----
+            const GREETING_POOL = [
+                "Hey there! good to see you active.",
+                "Hi! How's your content going today?",
+                "Hello! Welcome to the community!",
+                "Hey, what's up? Ready to create?"
+            ];
+            const QUESTION_KEYWORDS = ['how', 'what', 'why', 'when', 'where', 'who', '?', 'help', 'issue', 'problem', 'fix',
+                'tutorial', 'advice'
+            ];
+            const ANSWER_POOL = [
+                "Great question! Have you checked the AI Studio for that?",
+                "Thats a common issue. Try restarting the app or clearing cache.",
+                "Here is a tip: the hook generator in AI Studio really boosts engagement.",
+                "I think there is a tutorial in the resources section about that.",
+                "Honestly, the best way is to just keep practicing and posting consistently.",
+                "You could try exporting in a different resolution to fix that rendering bug.",
+                "I faced that too! Updating to the latest version solved it for me."
+            ];
+
+            // ================================================================
+            // ===== HELPERS: Shuffle & Track Repeats =====
+            // ================================================================
+            function shuffleArray(arr) {
+                for (let i = arr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+                return arr;
+            }
+
+            let remainingMessages = shuffleArray([...MESSAGE_POOL]);
+            let remainingReplies = shuffleArray([...REPLY_POOL]);
+            let remainingAdminReplies = shuffleArray([...ADMIN_REPLY_POOL]);
+
+            function getNextMessage(mentionName = null) {
+                if (remainingMessages.length === 0) {
+                    remainingMessages = shuffleArray([...MESSAGE_POOL]);
+                }
+                const index = Math.floor(Math.random() * remainingMessages.length);
+                let msg = remainingMessages.splice(index, 1)[0];
+                if (mentionName && Math.random() > 0.65) {
+                    msg = `@${mentionName} ${msg}`;
+                }
+                return msg;
+            }
+
+            function getNextReply() {
+                if (remainingReplies.length === 0) {
+                    remainingReplies = shuffleArray([...REPLY_POOL]);
+                }
+                const index = Math.floor(Math.random() * remainingReplies.length);
+                return remainingReplies.splice(index, 1)[0];
+            }
+
+            function getNextAdminReply() {
+                if (remainingAdminReplies.length === 0) {
+                    remainingAdminReplies = shuffleArray([...ADMIN_REPLY_POOL]);
+                }
+                const index = Math.floor(Math.random() * remainingAdminReplies.length);
+                return remainingAdminReplies.splice(index, 1)[0];
+            }
+
+            function formatNameFromFile(filename) {
+                const nameWithoutExt = filename.replace(/\.(jpg|jpeg|png|webp)$/i, '');
+                const parts = nameWithoutExt.split('_');
+                if (parts.length === 1) {
+                    return parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
+                }
+                const formattedParts = [parts[parts.length - 1], ...parts.slice(0, parts.length - 1)];
+                return formattedParts.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+            }
+
+            function getRandomItems(array, count = 2) {
+                const shuffled = [...array].sort(() => 0.5 - Math.random());
+                return shuffled.slice(0, count);
+            }
+
+            // ================================================================
+            // ===== GENERATE USERS =====
+            // ================================================================
+            const users = {};
+
+            // Create current user from localStorage
+            const currentUserId = 'currentUser';
+            const storedName = localStorage.getItem('userName') || 'You';
+            const storedAvatar = localStorage.getItem('userAvatar') || null;
+            users[currentUserId] = {
+                id: currentUserId,
+                name: storedName,
+                avatar: storedAvatar,
+                color: '#2563EB',
+                role: 'user',
+                online: true,
+                initials: storedName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'U',
+                trait: 'Creator',
+                tags: []
+            };
+
+            // Generate other users (including Dave Nick as user0)
+            for (let i = 0; i < 150; i++) {
+                const id = `user${i}`;
+                let name, avatar;
+
+                if (i === 0) {
+                    name = 'Dave Nick';
+                    avatar = 'assets/avatars/dave_nick.jpg';
+                } else if (i < avatarFilenames.length) {
+                    const file = avatarFilenames[i];
+                    avatar = `assets/avatars/${file}`;
+                    name = formatNameFromFile(file);
+                } else {
+                    const fallbackIndex = i - avatarFilenames.length;
+                    name = globalFallbackNames[fallbackIndex] || `User ${i}`;
+                    avatar = null;
+                }
+
+                const color = userColors[i % userColors.length];
+                const role = (i === 0) ? 'admin' : nonAdminRoles[Math.floor(Math.random() * nonAdminRoles.length)];
+                const online = Math.random() > 0.3;
+                const initials = name.split(' ').map(n => n[0]).join('');
+                const trait = (i === 0) ? 'Founder & Creator' : creatorTraits[Math.floor(Math.random() * creatorTraits.length)];
+                const tags = (i === 0) ? ['#SoloAI', '#CreatorEconomy', '#Tech'] : getRandomItems(tagPool, 2 + Math.floor(Math.random() * 2));
+
+                users[id] = { id, name, color, role, online, initials, avatar, trait, tags };
+            }
+
+            // ================================================================
+            // ===== TESTIMONIALS: localStorage + No Repeats Per Session =====
+            // ================================================================
+            const testimonialImages = Array.from({ length: 20 }, (_, i) =>
+                `assets/testimonials/testimonial-${String(i + 1).padStart(2, '0')}.jpg`);
+            const STORAGE_KEY = 'usedTestimonials';
+
+            let usedIndices = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            if (usedIndices.length >= 20) {
+                usedIndices = [];
+                localStorage.removeItem(STORAGE_KEY);
+            }
+
+            let availableTestimonialIndices = Array.from({ length: 20 }, (_, i) => i).filter(i => !usedIndices.includes(i));
+            let testimonialScheduler = null;
+
+            function triggerTestimonialBurst() {
+                if (availableTestimonialIndices.length === 0) {
+                    if (testimonialScheduler) {
+                        clearTimeout(testimonialScheduler);
+                        testimonialScheduler = null;
+                    }
+                    return;
+                }
+
+                const eligible = Object.keys(users).filter(u => u !== currentUserId && users[u].online);
+                if (eligible.length === 0) {
+                    scheduleNextTestimonial();
+                    return;
+                }
+
+                const count = Math.min(1 + Math.floor(Math.random() * 3), availableTestimonialIndices.length);
+
+                for (let i = 0; i < count; i++) {
+                    setTimeout(() => {
+                        if (availableTestimonialIndices.length === 0) return;
+
+                        const poolIndex = Math.floor(Math.random() * availableTestimonialIndices.length);
+                        const imageIndex = availableTestimonialIndices.splice(poolIndex, 1)[0];
+
+                        usedIndices.push(imageIndex);
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(usedIndices));
+
+                        const randomUserKey = eligible[Math.floor(Math.random() * eligible.length)];
+                        const image = testimonialImages[imageIndex];
+
+                        const msgText = getNextMessage();
+                        const now = new Date();
+                        const newMsg = {
+                            id: Date.now() + Math.random() * 1000 + i,
+                            userId: randomUserKey,
+                            text: "Check this out! " + msgText,
+                            timestamp: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                            date: 'Today',
+                            sortTime: now.getHours() * 60 + now.getMinutes(),
+                            reactions: {},
+                            replies: [],
+                            image: image,
+                            isUnread: true
+                        };
+                        messages.push(newMsg);
+                        renderMessages();
+                        updateUnreadBadge();
+                        if (users[randomUserKey]) showToast(`📸 ${users[randomUserKey].name} shared a testimonial!`,
+                            'fa-image');
+                    }, i * 3000 + Math.random() * 2000);
+                }
+                scheduleNextTestimonial();
+            }
+
+            function scheduleNextTestimonial() {
+                if (availableTestimonialIndices.length === 0) {
+                    testimonialScheduler = null;
+                    return;
+                }
+                const delay = 15000 + Math.random() * 35000;
+                if (testimonialScheduler) clearTimeout(testimonialScheduler);
+                testimonialScheduler = setTimeout(triggerTestimonialBurst, delay);
+            }
+
+            // ================================================================
+            // ===== IMAGE UPLOAD HANDLING =====
+            // ================================================================
+            const imageInput = document.createElement('input');
+            imageInput.type = 'file';
+            imageInput.id = 'imageInput';
+            imageInput.accept = 'image/*';
+            imageInput.style.position = 'fixed';
+            imageInput.style.left = '-9999px';
+            imageInput.style.opacity = '0';
+            document.body.appendChild(imageInput);
+
+            document.querySelector('.toolbar button[title="Image"]').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('imageInput').click();
+            });
+
+            window.pendingImage = null;
+            document.getElementById('imageInput').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        window.pendingImage = event.target.result;
+                        showToast('📸 Image attached! Send your message to post it.', 'fa-image');
+                    };
+                    reader.readAsDataURL(file);
+                }
+                this.value = '';
+            });
+
+            // ================================================================
+            // ===== DATE ORDER (older first, today last) =====
+            // ================================================================
+            const dateOrder = {
+                'Last week': 0,
+                'Last Monday': 1,
+                'Monday': 2,
+                '3 days ago': 3,
+                '2 days ago': 4,
+                'Yesterday': 5,
+                'Today': 6
+            };
+
+            // ================================================================
+            // ===== INITIAL FEED (mixed older & today) =====
+            // ================================================================
+            const messages = [];
+            const pastDates = ['Yesterday', '2 days ago', '3 days ago', 'Monday', 'Last Monday', 'Last week'];
+            const todayCount = 12;
+            const olderCount = 18;
+
+            function timeToMinutes(timeStr) {
+                const [time, period] = timeStr.split(' ');
+                let [hours, minutes] = time.split(':').map(Number);
+                if (period === 'PM' && hours !== 12) hours += 12;
+                if (period === 'AM' && hours === 12) hours = 0;
+                return hours * 60 + minutes;
+            }
+
+            // Generate older messages
+            for (let i = 0; i < olderCount; i++) {
+                const userId = `user${Math.floor(Math.random() * 149) + 1}`;
+                const user = users[userId] || users['user1'];
+                const date = pastDates[Math.floor(Math.random() * pastDates.length)];
+                const hour = Math.floor(Math.random() * 12) + 1;
+                const minute = Math.floor(Math.random() * 60);
+                const ampm = Math.random() > 0.5 ? 'AM' : 'PM';
+                const timestamp = `${hour}:${String(minute).padStart(2, '0')} ${ampm}`;
+
+                // sortTime = dateOrder * 100000 + timeMinutes
+                const sortTime = dateOrder[date] * 100000 + timeToMinutes(timestamp);
+
+                let image = null;
+                if (i < 5 && availableTestimonialIndices.length > 0 && Math.random() > 0.5) {
+                    const poolIndex = Math.floor(Math.random() * availableTestimonialIndices.length);
+                    const imageIndex = availableTestimonialIndices.splice(poolIndex, 1)[0];
+                    usedIndices.push(imageIndex);
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(usedIndices));
+                    image = testimonialImages[imageIndex];
+                }
+
+                const preReactions = {};
+                if (Math.random() > 0.3) {
+                    const emojis = ['👍', '❤️', '🔥', '🎉', '👏', '😂'];
+                    const count = Math.floor(Math.random() * 8) + 1;
+                    preReactions[emojis[Math.floor(Math.random() * emojis.length)]] = count;
+                }
+                let text = getNextMessage();
+                if (Math.random() > 0.6) {
+                    const randomUser = Object.values(users).filter(u => u.id !== currentUserId && u.id !== userId);
+                    if (randomUser.length > 0) {
+                        const mention = randomUser[Math.floor(Math.random() * randomUser.length)];
+                        text = `@${mention.name} ${text}`;
+                    }
+                }
+                messages.push({
+                    id: i + 1,
+                    userId,
+                    text,
+                    timestamp,
+                    date,
+                    sortTime,
+                    reactions: preReactions,
+                    replies: [],
+                    image,
+                    isUnread: false
+                });
+            }
+
+            // Generate today's messages (12) with increasing timestamps
+            const now = new Date();
+            const currentMinutes = now.getHours() * 60 + now.getMinutes();
+            let lastMinutes = 9 * 60; // 9:00 AM
+            for (let i = 0; i < todayCount; i++) {
+                const userId = `user${Math.floor(Math.random() * 149) + 1}`;
+                const user = users[userId] || users['user1'];
+                lastMinutes += 5 + Math.floor(Math.random() * 26);
+                if (lastMinutes > currentMinutes) lastMinutes = currentMinutes - (todayCount - i) * 5;
+                if (lastMinutes < 9 * 60) lastMinutes = 9 * 60;
+                const hours24 = Math.floor(lastMinutes / 60);
+                const minutes = lastMinutes % 60;
+                const ampm = hours24 >= 12 ? 'PM' : 'AM';
+                const hours12 = hours24 % 12 === 0 ? 12 : hours24 % 12;
+                const timestamp = `${hours12}:${String(minutes).padStart(2, '0')} ${ampm}`;
+                const sortTime = dateOrder['Today'] * 100000 + lastMinutes;
+
+                let image = null;
+                if (i < 3 && availableTestimonialIndices.length > 0 && Math.random() > 0.6) {
+                    const poolIndex = Math.floor(Math.random() * availableTestimonialIndices.length);
+                    const imageIndex = availableTestimonialIndices.splice(poolIndex, 1)[0];
+                    usedIndices.push(imageIndex);
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(usedIndices));
+                    image = testimonialImages[imageIndex];
+                }
+
+                const preReactions = {};
+                if (Math.random() > 0.3) {
+                    const emojis = ['👍', '❤️', '🔥', '🎉', '👏', '😂'];
+                    const count = Math.floor(Math.random() * 8) + 1;
+                    preReactions[emojis[Math.floor(Math.random() * emojis.length)]] = count;
+                }
+                let text = getNextMessage();
+                if (Math.random() > 0.6) {
+                    const randomUser = Object.values(users).filter(u => u.id !== currentUserId && u.id !== userId);
+                    if (randomUser.length > 0) {
+                        const mention = randomUser[Math.floor(Math.random() * randomUser.length)];
+                        text = `@${mention.name} ${text}`;
+                    }
+                }
+                messages.push({
+                    id: olderCount + i + 1,
+                    userId,
+                    text,
+                    timestamp,
+                    date: 'Today',
+                    sortTime,
+                    reactions: preReactions,
+                    replies: [],
+                    image,
+                    isUnread: i < 4 // first 4 today messages are unread
+                });
+            }
+
+            scheduleNextTestimonial();
+
+            // ================================================================
+            // ===== RENDER MESSAGES =====
+            // ================================================================
+            let pendingScrollToMessageId = null;
+            let pauseSimulation = false;
+
+            function updateUnreadBadge() {
+                const count = messages.filter(m => m.isUnread).length;
+                const badge = document.getElementById('unreadBadge');
+                if (count > 0) {
+                    badge.style.display = 'flex';
+                    document.getElementById('unreadCount').textContent = count;
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+
+            function renderMessages() {
+                const feed = document.getElementById('messagesFeed');
+                let html = '';
+                let lastDate = '';
+                // Sort by dateOrder then sortTime
+                const sortedMessages = [...messages].sort((a, b) => {
+                    const aOrder = dateOrder[a.date] !== undefined ? dateOrder[a.date] : 99;
+                    const bOrder = dateOrder[b.date] !== undefined ? dateOrder[b.date] : 99;
+                    if (aOrder !== bOrder) return aOrder - bOrder;
+                    return (a.sortTime || 0) - (b.sortTime || 0);
+                });
+                sortedMessages.forEach(msg => {
+                    const user = users[msg.userId] || users['user1'];
+                    if (msg.date !== lastDate) {
+                        html +=
+                            `<div class="date-divider"><span class="line"></span><span class="label">${msg.date}</span><span class="line"></span></div>`;
+                        lastDate = msg.date;
+                    }
+                    if (msg.isUnread && msg.date === 'Today') {
+                        html +=
+                            `<div class="unread-divider"><span class="line"></span><span class="label">New Messages</span><span class="line"></span></div>`;
+                    }
+                    const avatarHtml = user.avatar ?
+                        `<div class="avatar has-image" style="background-image: url('${user.avatar}');"></div>` :
+                        `<div class="avatar initials" style="background: ${user.color};">${user.initials}</div>`;
+
+                    const reactionsHtml = Object.entries(msg.reactions).map(([emoji, count]) => `
+                        <span class="reactions" data-msg-id="${msg.id}" data-emoji="${emoji}">
+                            <span class="emoji">${emoji}</span> <span class="count">${count}</span>
+                        </span>`).join('');
+
+                    const replyCount = msg.replies ? msg.replies.length : 0;
+
+                    let imageHtml = '';
+                    if (msg.image) {
+                        imageHtml =
+                            `<div class="testimonial-image"><img src="${msg.image}" alt="Testimonial" onerror="this.style.display='none'" /><span class="file-label"><span>📸 Media</span></span></div>`;
+                    }
+
+                    const tagsHtml = (user.tags || []).map(t =>
+                        `<span class="tag-pill" style="font-size:0.45rem;color:#2563EB;background:var(--bg-active);padding:0.02rem 0.4rem;border-radius:40px;cursor:pointer;transition:all var(--transition);">${t}</span>`
+                    ).join('');
+
+                    let roleBadge = '';
+                    if (user.role === 'admin') roleBadge =
+                        `<span class="role-badge" style="background:#7C3AED;color:white;padding:0.02rem 0.4rem;border-radius:40px;font-size:0.45rem;font-weight:600;">👑 Admin</span>`;
+                    else if (user.role === 'staff') roleBadge =
+                        `<span class="role-badge" style="background:#2563EB;color:white;padding:0.02rem 0.4rem;border-radius:40px;font-size:0.45rem;font-weight:600;">⭐ Staff</span>`;
+                    else if (user.role === 'moderator') roleBadge =
+                        `<span class="role-badge" style="background:#F59E0B;color:white;padding:0.02rem 0.4rem;border-radius:40px;font-size:0.45rem;font-weight:600;">🛡️ Mod</span>`;
+                    else if (user.role === 'expert') roleBadge =
+                        `<span class="role-badge" style="background:#16A34A;color:white;padding:0.02rem 0.4rem;border-radius:40px;font-size:0.45rem;font-weight:600;">🏅 Expert</span>`;
+
+                    html += `
+                        <div class="message" data-id="${msg.id}">
+                            <div class="avatar-wrap">
+                                ${avatarHtml}
+                                <span class="online-dot ${user.online ? '' : 'offline'}"></span>
+                            </div>
+                            <div class="body">
+                                <div class="header">
+                                    <span class="username">
+                                        ${user.name}
+                                        ${roleBadge}
+                                        <span class="trait-badge" style="font-size:0.45rem;background:var(--bg-hover);padding:0.02rem 0.4rem;border-radius:40px;color:var(--text-secondary);font-weight:500;">${user.trait || 'Creator'}</span>
+                                    </span>
+                                    <span class="timestamp">${msg.timestamp}</span>
+                                </div>
+                                <div class="content">${msg.text}${imageHtml}</div>
+                                <div class="tags" style="margin-top:3px;display:flex;gap:3px;flex-wrap:wrap;">
+                                    ${tagsHtml}
+                                </div>
+                                <div class="footer">
+                                    ${reactionsHtml}
+                                    <span class="reactions" data-msg-id="${msg.id}" data-emoji="add">
+                                        <span class="add">➕</span>
+                                    </span>
+                                    <span class="reply-link" data-msg-id="${msg.id}"><i class="fas fa-reply"></i> Reply</span>
+                                    ${replyCount > 0 ? `<span class="thread-preview" data-msg-id="${msg.id}">View ${replyCount} replies</span>` : ''}
+                                </div>
+                            </div>
+                            <div class="hover-actions">
+                                <button title="React" class="react-btn" data-msg-id="${msg.id}"><i class="far fa-smile"></i></button>
+                                <button title="Reply" class="reply-btn" data-msg-id="${msg.id}"><i class="fas fa-reply"></i></button>
+                                <button title="Bookmark"><i class="far fa-bookmark"></i></button>
+                                <button title="More"><i class="fas fa-ellipsis-vertical"></i></button>
+                            </div>
+                        </div>`;
+                });
+                feed.innerHTML = html;
+
+                if (pendingScrollToMessageId) {
+                    const targetEl = feed.querySelector(`.message[data-id="${pendingScrollToMessageId}"]`);
+                    if (targetEl) {
+                        targetEl.scrollIntoView({ block: 'center' });
+                        pendingScrollToMessageId = null;
+                    } else {
+                        feed.scrollTop = feed.scrollHeight;
+                    }
+                } else {
+                    // Scroll to bottom to show latest messages (Today's newest)
+                    feed.scrollTop = feed.scrollHeight;
+                }
+
+                attachMessageEvents();
+            }
+
+            // ================================================================
+            // ===== EVENT ATTACHMENT =====
+            // ================================================================
+            function attachMessageEvents() {
+                document.querySelectorAll('.reactions[data-msg-id]').forEach(el => {
+                    el.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const msgId = parseInt(this.dataset.msgId);
+                        const emoji = this.dataset.emoji;
+                        const msg = messages.find(m => m.id === msgId);
+                        if (!msg) return;
+                        if (emoji === 'add') {
+                            const emojis = ['👍', '❤️', '🔥', '🎉', '👏', '😂', '🤔', '💡'];
+                            const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+                            if (!msg.reactions[randomEmoji]) msg.reactions[randomEmoji] = 0;
+                            msg.reactions[randomEmoji]++;
+                            renderMessages();
+                            showToast(`Reacted with ${randomEmoji}`, 'fa-smile');
+                        } else {
+                            if (!msg.reactions[emoji]) msg.reactions[emoji] = 0;
+                            msg.reactions[emoji]++;
+                            renderMessages();
+                            showToast(`Reacted with ${emoji}`, 'fa-smile');
+                        }
+                    });
+                });
+
+                document.querySelectorAll('.reply-link, .reply-btn').forEach(el => {
+                    el.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const msgId = parseInt(this.dataset.msgId);
+                        const msg = messages.find(m => m.id === msgId);
+                        if (!msg) return;
+                        const user = users[msg.userId] || users['user1'];
+                        window.replyTo = msgId;
+                        const preview = document.getElementById('replyPreview');
+                        const avatar = preview.querySelector('.avatar');
+                        avatar.style.background = user.color || '#4F46E5';
+                        if (user.avatar) {
+                            avatar.style.backgroundImage = `url('${user.avatar}')`;
+                            avatar.style.backgroundSize = 'cover';
+                            avatar.style.backgroundPosition = 'center';
+                            avatar.textContent = '';
+                        } else {
+                            avatar.style.backgroundImage = 'none';
+                            avatar.textContent = user.initials || 'U';
+                            avatar.style.background = user.color;
+                        }
+                        const previewText = msg.text.replace(/<[^>]*>/g, '').substring(0, 80);
+                        document.getElementById('replyText').innerHTML =
+                            `Replying to <span class="name">${user.name}</span>: "${previewText}${previewText.length >= 80 ? '...' : ''}"`;
+                        preview.classList.add('show');
+                        document.getElementById('messageInput').focus();
+                        showToast(`💬 Replying to ${user.name}`, 'fa-reply');
+                    });
+                });
+
+                document.querySelectorAll('.thread-preview').forEach(el => {
+                    el.addEventListener('click', function() {
+                        const msgId = parseInt(this.dataset.msgId);
+                        const msg = messages.find(m => m.id === msgId);
+                        if (msg) showToast(`🧵 Opening thread (${msg.replies ? msg.replies.length : 0} replies)...`,
+                            'fa-thread');
+                    });
+                });
+
+                document.querySelectorAll('.react-btn').forEach(el => {
+                    el.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const msgId = parseInt(this.dataset.msgId);
+                        const msg = messages.find(m => m.id === msgId);
+                        if (!msg) return;
+                        const emojis = ['👍', '❤️', '🔥', '🎉', '👏', '😂', '🤔', '💡'];
+                        const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+                        if (!msg.reactions[randomEmoji]) msg.reactions[randomEmoji] = 0;
+                        msg.reactions[randomEmoji]++;
+                        renderMessages();
+                        showToast(`Reacted with ${randomEmoji}`, 'fa-smile');
+                    });
+                });
+
+                document.querySelectorAll('.tag-pill').forEach(el => {
+                    el.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        showToast(`🔍 Searching posts with ${this.textContent}`, 'fa-hashtag');
+                    });
+                });
+            }
+
+            // ================================================================
+            // ===== SEND MESSAGE & AI TRIGGER =====
+            // ================================================================
+            window.replyTo = null;
+
+            function triggerAIReply(userMessage) {
+                if (Math.random() < 0.4) return; // 40% no reply
+
+                const onlineUsers = Object.keys(users).filter(u => u !== currentUserId && users[u].online);
+                if (onlineUsers.length === 0) return;
+
+                let replyText = '';
+                let randomUserKey;
+                const lowerMsg = userMessage.toLowerCase();
+
+                // Decide if admin replies (if online) with 40% chance
+                const adminUser = users['user0'];
+                const adminOnline = adminUser && adminUser.online;
+                if (adminOnline && Math.random() < 0.4) {
+                    randomUserKey = 'user0';
+                    replyText = getNextAdminReply();
+                } else {
+                    // Regular user reply
+                    randomUserKey = onlineUsers[Math.floor(Math.random() * onlineUsers.length)];
+                    if (QUESTION_KEYWORDS.some(kw => lowerMsg.includes(kw))) {
+                        replyText = ANSWER_POOL[Math.floor(Math.random() * ANSWER_POOL.length)];
+                    } else if (lowerMsg.includes('hello') || lowerMsg.includes('hi ') || lowerMsg === 'hi' || lowerMsg
+                        .includes('hey') || lowerMsg.includes('sup')) {
+                        replyText = GREETING_POOL[Math.floor(Math.random() * GREETING_POOL.length)];
+                    } else if (lowerMsg.includes('@')) {
+                        replyText =
+                        `@${users[currentUserId].name} ${['Good point!', 'I agree!', 'Let me think about that.', 'Fair enough.'][Math.floor(Math.random() * 4)]}`;
+                    } else {
+                        replyText = getNextReply();
+                    }
+                }
+
+                if (!replyText) replyText = getNextReply();
+
+                const now = new Date();
+                const autoReply = {
+                    id: Date.now() + Math.random() * 1000,
+                    userId: randomUserKey,
+                    text: replyText,
+                    timestamp: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    date: 'Today',
+                    sortTime: dateOrder['Today'] * 100000 + (now.getHours() * 60 + now.getMinutes()),
+                    reactions: {},
+                    replies: [],
+                    image: null,
+                    isUnread: true
+                };
+                messages.push(autoReply);
+                renderMessages();
+                updateUnreadBadge();
+                const u = users[randomUserKey];
+                if (u) showToast(`💬 ${u.name} replied!`, 'fa-comment');
+            }
+
+            function sendMessage() {
+                const input = document.getElementById('messageInput');
+                const text = input.value.trim();
+                if (!text) return;
+
+                let imageToSend = window.pendingImage || null;
+                if (imageToSend) window.pendingImage = null;
+
+                if (window.replyTo && imageToSend) {
+                    showToast('Images cannot be attached to replies.', 'fa-exclamation-triangle');
+                    imageToSend = null;
+                }
+
+                const now = new Date();
+                const newMsg = {
+                    id: Date.now() + Math.random() * 1000,
+                    userId: currentUserId,
+                    text,
+                    timestamp: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    date: 'Today',
+                    sortTime: dateOrder['Today'] * 100000 + (now.getHours() * 60 + now.getMinutes()),
+                    reactions: {},
+                    replies: [],
+                    image: imageToSend,
+                    isUnread: false
+                };
+
+                if (window.replyTo) {
+                    const parent = messages.find(m => m.id === window.replyTo);
+                    if (parent) {
+                        if (!parent.replies) parent.replies = [];
+                        parent.replies.push({ userId: currentUserId, text, timestamp: new Date().toLocaleTimeString([],
+                                { hour: '2-digit', minute: '2-digit' }) });
+                        showToast('💬 Reply sent!', 'fa-reply');
+                    } else {
+                        messages.push(newMsg);
+                        pendingScrollToMessageId = newMsg.id;
+                        showToast('📨 Message sent!', 'fa-paper-plane');
+                    }
+                    window.replyTo = null;
+                    document.getElementById('replyPreview').classList.remove('show');
+                } else {
+                    messages.push(newMsg);
+                    pendingScrollToMessageId = newMsg.id;
+                    if (imageToSend) {
+                        showToast('📸 Image posted!', 'fa-image');
+                    } else {
+                        showToast('📨 Message sent!', 'fa-paper-plane');
+                    }
+
+                    pauseSimulation = true;
+                    setTimeout(() => {
+                        pauseSimulation = false;
+                        triggerAIReply(text);
+                    }, 6000);
+                }
+
+                input.value = '';
+                input.style.height = 'auto';
+                renderMessages();
+                updateUnreadBadge();
+            }
+
+            document.getElementById('sendBtn').addEventListener('click', sendMessage);
+            document.getElementById('messageInput').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+            document.getElementById('messageInput').addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+            });
+            document.getElementById('cancelReply').addEventListener('click', function() {
+                window.replyTo = null;
+                document.getElementById('replyPreview').classList.remove('show');
+                showToast('Reply cancelled', 'fa-times');
+            });
+
+            // ===== TYPING INDICATOR =====
+            const typingText = document.getElementById('typingText');
+            const allUserNames = Object.values(users).map(u => u.name).filter(n => n !== users[currentUserId].name);
+
+            function updateTypingIndicator() {
+                const available = allUserNames.filter(n => n !== typingText.textContent.replace(' is typing...', '')
+                .trim());
+                const name = available[Math.floor(Math.random() * available.length)] || allUserNames[0];
+                typingText.textContent = `${name} is typing...`;
+            }
+            setInterval(updateTypingIndicator, 4000 + Math.random() * 4000);
+
+            // ================================================================
+            // ===== DRAGGABLE AI WIDGET =====
+            // ================================================================
+            const aiWidget = document.getElementById('aiWidget');
+            let isDragging = false,
+                startX, startY, initialLeft, initialTop;
+            aiWidget.addEventListener('mousedown', function(e) {
+                if (e.target.tagName === 'BUTTON' || e.target.closest('.pill') || e.target.closest('.btn-ask'))
+                    return;
+                isDragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                const rect = aiWidget.getBoundingClientRect();
+                initialLeft = rect.left;
+                initialTop = rect.top;
+                aiWidget.style.cursor = 'grabbing';
+                e.preventDefault();
+            });
+            window.addEventListener('mousemove', function(e) {
+                if (!isDragging) return;
+                aiWidget.style.left = (initialLeft + e.clientX - startX) + 'px';
+                aiWidget.style.top = (initialTop + e.clientY - startY) + 'px';
+                aiWidget.style.right = 'auto';
+                aiWidget.style.bottom = 'auto';
+            });
+            window.addEventListener('mouseup', function() {
+                if (isDragging) {
+                    isDragging = false;
+                    aiWidget.style.cursor = 'grab';
+                }
+            });
+            aiWidget.addEventListener('touchstart', function(e) {
+                if (e.target.tagName === 'BUTTON' || e.target.closest('.pill') || e.target.closest('.btn-ask'))
+                    return;
+                isDragging = true;
+                const touch = e.touches[0];
+                startX = touch.clientX;
+                startY = touch.clientY;
+                const rect = aiWidget.getBoundingClientRect();
+                initialLeft = rect.left;
+                initialTop = rect.top;
+            }, { passive: false });
+            window.addEventListener('touchmove', function(e) {
+                if (!isDragging) return;
+                const touch = e.touches[0];
+                aiWidget.style.left = (initialLeft + touch.clientX - startX) + 'px';
+                aiWidget.style.top = (initialTop + touch.clientY - startY) + 'px';
+                aiWidget.style.right = 'auto';
+                aiWidget.style.bottom = 'auto';
+                e.preventDefault();
+            }, { passive: false });
+            window.addEventListener('touchend', function() {
+                isDragging = false;
+            });
+
+            // ================================================================
+            // ===== AI MODAL =====
+            // ================================================================
+            const aiModalOverlay = document.getElementById('aiModalOverlay');
+            const aiModalBody = document.getElementById('aiModalBody');
+            const aiModalInput = document.getElementById('aiModalInput');
+            const aiModalSend = document.getElementById('aiModalSend');
+            const aiModalClose = document.getElementById('aiModalClose');
+            const aiModalCancel = document.getElementById('aiModalCancel');
+            const aiModalSuggestions = document.getElementById('aiModalSuggestions');
+
+            const aiKnowledgeBase = [
+                { q: ['summarize', 'summary', 'latest', 'discussions'],
+                    a: '📊 **Latest Community Summary:** The top discussions right now are about YouTube Shorts (142 replies), Instagram Carousels (98 replies), and AI prompt engineering (76 replies).' },
+                { q: ['youtube', 'grow', 'channel'],
+                    a: '🎬 **YouTube Growth Tips:** Use AI Script Generator, post Shorts daily, optimize thumbnails (+18% CTR), and engage early.' },
+                { q: ['templates', 'ai studio'],
+                    a: '🎨 **Top Templates:** YouTube Script, Instagram Carousel, TikTok Hook Generator, Blog Outline, Email Newsletter.' },
+                { q: ['publish', 'calendar'],
+                    a: '📅 **Publishing Calendar:** Schedule across platforms, batch-create, AI-suggested times.' },
+                { q: ['hello', 'hi', 'hey', 'help'],
+                    a: '👋 Hey! I can summarize discussions, find conversations, answer questions. Just ask!' }
+            ];
+
+            function getAIResponse(query) {
+                const q = query.toLowerCase();
+                let best = null,
+                    bestScore = 0;
+                for (const entry of aiKnowledgeBase) {
+                    let score = 0;
+                    for (const kw of entry.q)
+                        if (q.includes(kw)) score += kw.length;
+                    if (score > bestScore) { bestScore = score;
+                        best = entry; }
+                }
+                return best && bestScore > 2 ? best.a :
+                    "Great question! I'd recommend checking the AI Studio or asking in #general.";
+            }
+
+            function openAIModal(initialQuestion) {
+                aiModalOverlay.classList.add('active');
+                if (initialQuestion) {
+                    addAIMessageToModal('user', initialQuestion);
+                    setTimeout(() => addAIMessageToModal('ai', getAIResponse(initialQuestion)), 700);
+                }
+                setTimeout(() => aiModalInput.focus(), 300);
+            }
+
+            function closeAIModal() {
+                aiModalOverlay.classList.remove('active');
+                aiModalInput.value = '';
+            }
+
+            function addAIMessageToModal(type, text) {
+                const div = document.createElement('div');
+                div.className = `ai-msg ${type}`;
+                div.innerHTML = type === 'ai' ?
+                    `<div class="bubble"><div class="ai-label">🤖 AI Assistant</div>${text}</div>` :
+                    `<div class="bubble">${text}</div>`;
+                aiModalBody.appendChild(div);
+                aiModalBody.scrollTop = aiModalBody.scrollHeight;
+            }
+
+            function handleAISend() {
+                const text = aiModalInput.value.trim();
+                if (!text) return;
+                addAIMessageToModal('user', text);
+                aiModalInput.value = '';
+                setTimeout(() => addAIMessageToModal('ai', getAIResponse(text)), 800);
+            }
+
+            aiModalSend.addEventListener('click', handleAISend);
+            aiModalInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault();
+                    handleAISend(); } });
+            aiModalClose.addEventListener('click', closeAIModal);
+            aiModalCancel.addEventListener('click', closeAIModal);
+            aiModalOverlay.addEventListener('click', e => { if (e.target === aiModalOverlay) closeAIModal(); });
+
+            aiModalSuggestions.querySelectorAll('.pill').forEach(pill => {
+                pill.addEventListener('click', function() {
+                    const q = this.textContent.trim();
+                    addAIMessageToModal('user', q);
+                    setTimeout(() => addAIMessageToModal('ai', getAIResponse(q)), 700);
+                });
+            });
+
+            document.getElementById('aiAskBtn').addEventListener('click', () => openAIModal(null));
+            document.querySelectorAll('.ai-widget .suggestions .pill').forEach(pill => {
+                pill.addEventListener('click', function() {
+                    const action = this.dataset.action;
+                    let question = '';
+                    switch (action) {
+                        case 'summarize':
+                            question = 'Can you summarize the latest community discussions?';
+                            break;
+                        case 'find':
+                            question = 'Find conversations about AI Studio for me.';
+                            break;
+                        case 'suggest':
+                            question = 'What channel should I join for content strategy?';
+                            break;
+                        case 'answer':
+                            question = 'How do I grow my YouTube channel with Solo AI?';
+                            break;
+                        case 'starter':
+                            question = 'Give me a discussion starter for the community.';
+                            break;
+                        default:
+                            question = this.textContent.trim();
+                    }
+                    openAIModal(question);
+                });
+            });
+
+            // ================================================================
+            // ===== ONLINE MEMBERS =====
+            // ================================================================
+            function renderOnlineMembers() {
+                const onlineUsers = Object.values(users).filter(u => u.online && u.id !== currentUserId);
+                document.getElementById('onlineCount').textContent = onlineUsers.length;
+                const list = document.getElementById('onlineMembersList');
+                let html = '';
+                [...onlineUsers].sort(() => Math.random() - 0.5).slice(0, 8).forEach(u => {
+                    html += `
+                        <div class="member-item">
+                            <div class="avatar" style="${u.avatar ? `background-image:url('${u.avatar}');background-size:cover;` : `background:${u.color};`}">${u.avatar ? '' : u.initials}<span class="online-dot"></span></div>
+                            <span class="name">${u.name}</span>
+                            <span style="font-size:0.4rem;color:var(--text-muted);background:var(--bg-hover);padding:0 0.2rem;border-radius:40px;white-space:nowrap;">${u.trait?.split(' ').slice(0,2).join(' ') || 'Creator'}</span>
+                        </div>`;
+                });
+                if (onlineUsers.length > 8) html +=
+                    `<div class="member-item" style="font-size:0.55rem;color:var(--text-muted);justify-content:center;">+ ${onlineUsers.length - 8} more</div>`;
+                list.innerHTML = html;
+            }
+
+            document.getElementById('onlineMembersList').addEventListener('click', function(e) {
+                const memberItem = e.target.closest('.member-item');
+                if (memberItem) {
+                    const name = memberItem.querySelector('.name')?.textContent || 'Member';
+                    showToast(`👤 Viewing profile: ${name}`, 'fa-user');
+                }
+            });
+
+            renderOnlineMembers();
+
+            setInterval(() => {
+                const onlineProb = 0.3 + Math.random() * 0.5;
+                Object.keys(users).forEach(key => {
+                    if (key !== currentUserId) {
+                        users[key].online = Math.random() < onlineProb;
+                    }
+                });
+                renderOnlineMembers();
+            }, 15000);
+
+            // ================================================================
+            // ===== BACKGROUND SIMULATION (Burst Messages & Interactions) =====
+            // ================================================================
+            function sendBurstMessages(count = 2) {
+                if (pauseSimulation) return;
+                const eligible = Object.keys(users).filter(u => u !== currentUserId && users[u].online);
+                if (eligible.length === 0) return;
+                for (let i = 0; i < count; i++) {
+                    setTimeout(() => {
+                        if (pauseSimulation) return;
+                        const randomUserKey = eligible[Math.floor(Math.random() * eligible.length)] || 'user1';
+                        let text;
+                        let isReply = false;
+                        if (messages.length > 0 && Math.random() > 0.6) {
+                            const lastMsg = messages[messages.length - 1];
+                            if (lastMsg.userId !== randomUserKey) {
+                                text = `@${users[lastMsg.userId]?.name || 'User'} ${getNextReply()}`;
+                                isReply = true;
+                            }
+                        }
+                        if (!isReply) {
+                            const randomOnlineUser = eligible.filter(u => u !== randomUserKey);
+                            const mentionName = randomOnlineUser.length > 0 && Math.random() > 0.65 ? users[
+                                randomOnlineUser[Math.floor(Math.random() * randomOnlineUser.length)]]
+                                .name : null;
+                            text = getNextMessage(mentionName);
+                        }
+                        const now = new Date();
+                        const newMsg = {
+                            id: Date.now() + Math.random() * 1000 + i,
+                            userId: randomUserKey,
+                            text,
+                            timestamp: now.toLocaleTimeString([], { hour: '2-digit',
+                                minute: '2-digit' }),
+                            date: 'Today',
+                            sortTime: dateOrder['Today'] * 100000 + (now.getHours() * 60 + now.getMinutes()),
+                            reactions: {},
+                            replies: [],
+                            image: null,
+                            isUnread: true
+                        };
+                        messages.push(newMsg);
+                        renderMessages();
+                        updateUnreadBadge();
+                        if (users[randomUserKey]) showToast(`💬 New from ${users[randomUserKey].name}`,
+                        'fa-comment');
+                    }, i * 800 + Math.random() * 1200);
+                }
+            }
+
+            function simulateMemberInteraction() {
+                if (pauseSimulation) return;
+                if (messages.length < 2) return;
+                const eligibleMsgs = messages.filter(m => m.userId !== currentUserId);
+                if (eligibleMsgs.length === 0) return;
+                const targetMsg = eligibleMsgs[Math.floor(Math.random() * eligibleMsgs.length)];
+                if (Math.random() > 0.4) {
+                    const onlineUsers = Object.keys(users).filter(u => u !== currentUserId && u !== targetMsg.userId &&
+                        users[u].online);
+                    if (onlineUsers.length > 0) {
+                        const reactor = users[onlineUsers[Math.floor(Math.random() * onlineUsers.length)]];
+                        const emojis = ['👍', '❤️', '🔥', '🎉', '👏', '😂', '🤔', '💡'];
+                        const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+                        if (!targetMsg.reactions[emoji]) targetMsg.reactions[emoji] = 0;
+                        targetMsg.reactions[emoji]++;
+                        renderMessages();
+                    }
+                }
+                if (Math.random() > 0.6) {
+                    const onlineUsers = Object.keys(users).filter(u => u !== currentUserId && u !== targetMsg.userId &&
+                        users[u].online);
+                    if (onlineUsers.length > 0) {
+                        const replier = users[onlineUsers[Math.floor(Math.random() * onlineUsers.length)]];
+                        const replyText = `@${users[targetMsg.userId]?.name || 'User'} ${getNextReply()}`;
+                        if (!targetMsg.replies) targetMsg.replies = [];
+                        targetMsg.replies.push({ userId: replier.id, text: replyText, timestamp: new Date()
+                                .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
+                        renderMessages();
+                    }
+                }
+            }
+
+            setInterval(() => {
+                if (Math.random() > 0.5 && !pauseSimulation) {
+                    const burstSize = 1 + Math.floor(Math.random() * 3);
+                    sendBurstMessages(burstSize);
+                }
+            }, 10000 + Math.random() * 8000);
+
+            setInterval(() => {
+                if (Math.random() > 0.4 && !pauseSimulation) simulateMemberInteraction();
+            }, 5000 + Math.random() * 5000);
+
+            // ================================================================
+            // ===== INITIAL RENDER & SEARCH =====
+            // ================================================================
+            renderMessages();
+            updateUnreadBadge();
+
+            document.getElementById('globalSearch').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && this.value.trim()) showToast(`🔍 Searching community: "${this.value}"`,
+                    'fa-search');
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault();
+                    document.getElementById('globalSearch').focus(); }
+                if ((e.ctrlKey || e.metaKey) && e.key === 'n') { e.preventDefault();
+                    document.getElementById('messageInput').focus(); }
+            });
+
+            // Static event listeners (these elements are not re-rendered)
+            document.querySelectorAll('.trend-item').forEach(item => {
+                item.addEventListener('click', () => showToast(
+                    `🔥 Opening: ${item.querySelector('.name')?.textContent || 'Topic'}`,
+                'fa-fire'));
+            });
+            document.querySelectorAll('.event-item .btn-register').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    showToast(
+                        `✅ Registered for: ${this.closest('.event-item').querySelector('.name')?.textContent || 'Event'}`,
+                        'fa-calendar-check');
+                });
+            });
+            document.querySelectorAll('.stats-grid .stat').forEach(stat => {
+                stat.addEventListener('click', () => showToast(
+                    `📊 Viewing: ${stat.querySelector('.label')?.textContent || 'Stat'}`,
+                'fa-chart-bar'));
+            });
+            document.querySelectorAll('.pinned-resources .item').forEach(item => {
+                item.addEventListener('click', function() {
+                    showToast(`📄 Opening: ${this.textContent.trim()}`, 'fa-book');
+                });
+            });
+            document.getElementById('unreadBadge').addEventListener('click', () => {
+                const feed = document.getElementById('messagesFeed');
+                feed.scrollTop = feed.scrollHeight;
+                messages.forEach(m => m.isUnread = false);
+                updateUnreadBadge();
+                renderMessages();
+                showToast('📬 All caught up!', 'fa-check');
+            });
+
+        })();
+    </script>
+
+</body>
+</html>
