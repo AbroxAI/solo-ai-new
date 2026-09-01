@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Solo AI – Settings</title>
+    <link rel="icon" type="image/x-icon" href="assets/images/logo/favicon.ico" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        /* ===== CSS Variables ===== */
+        :root {
+            --bg-page: #F8FAFC;
+            --bg-sidebar: #FFFFFF;
+            --bg-card: #FFFFFF;
+            --bg-input: #FFFFFF;
+            --bg-hover: #F8FAFC;
+            --bg-active: #EFF6FF;
+            --bg-switch-on: #2563EB;
+            --bg-switch-off: #CBD5E1;
+
+            --text-primary: #0F172A;
+            --text-secondary: #475569;
+            --text-muted: #94A3B8;
+
+            --border-color: #E5E7EB;
+            --border-divider: #E2E8F0;
+
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.08);
+
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+
+            --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .dark {
+            --bg-page: #0F172A;
+            --bg-sidebar: #1E293B;
+            --bg-card: #1E293B;
+            --bg-input: #1E293B;
+            --bg-hover: #0F172A;
+            --bg-active: #1E3A5F;
+            --bg-switch-on: #2563EB;
+            --bg-switch-off: #475569;
+
+            --text-primary: #F1F5F9;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+
+            --border-color: #334155;
+            --border-divider: #334155;
+
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        /* ===== Base ===== */
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            box-sizing: border-box;
+        }
+        body {
+            background: var(--bg-page);
+            margin: 0;
+            padding: 0;
+            transition: background 0.3s ease, color 0.3s ease;
+            color: var(--text-primary);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: var(--bg-page); border-radius: 8px; }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 8px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+        /* ===== Sidebar ===== */
+        .sidebar {
+            width: 250px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 40;
+            transition: transform 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+        }
+        .sidebar-brand { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-divider); display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
+        .sidebar-brand .logo-icon { width: 32px; height: 32px; background: #4F46E5; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.8rem; }
+        .sidebar-brand span { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); letter-spacing: -0.3px; }
+        .sidebar-user { padding: 0.75rem 1.5rem; border-bottom: 1px solid var(--border-divider); display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
+        .sidebar-user .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--bg-active); color: #2563EB; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.75rem; flex-shrink: 0; background-size: cover; background-position: center; }
+        .sidebar-user .info .name { font-size: 0.8rem; font-weight: 600; color: var(--text-primary); }
+        .sidebar-user .info .plan { font-size: 0.6rem; font-weight: 500; color: var(--text-muted); display: flex; align-items: center; gap: 0.3rem; }
+        .sidebar-user .info .plan .dot { width: 5px; height: 5px; border-radius: 50%; background: #94A3B8; display: inline-block; }
+        .sidebar-nav { flex: 1; overflow-y: auto; padding: 0.75rem 0.75rem; }
+        .sidebar-nav .section-label { font-size: 0.55rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; padding: 0.5rem 0.9rem 0.2rem; }
+        .nav-link { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0.9rem; border-radius: var(--radius-sm); font-size: 0.8rem; font-weight: 500; color: var(--text-secondary); transition: all var(--transition); text-decoration: none; cursor: pointer; position: relative; }
+        .nav-link:hover { background: var(--bg-hover); color: var(--text-primary); }
+        .nav-link i { width: 1.1rem; text-align: center; font-size: 0.85rem; color: var(--text-muted); }
+        .nav-link.active { background: var(--bg-active); color: #2563EB; font-weight: 600; }
+        .nav-link.active i { color: #2563EB; }
+        .nav-link.active::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 3px; height: 20px; background: #2563EB; border-radius: 0 3px 3px 0; }
+        .nav-link .badge { margin-left: auto; background: var(--border-color); color: var(--text-secondary); font-size: 0.55rem; font-weight: 600; padding: 0.05rem 0.45rem; border-radius: 40px; }
+        .nav-link.active .badge { background: #DBEAFE; color: #1E40AF; }
+        .dark .nav-link.active .badge { background: #1E3A5F; color: #60A5FA; }
+
+        .sidebar-bottom { padding: 0.75rem 1.25rem; border-top: 1px solid var(--border-divider); flex-shrink: 0; }
+        .membership-card { background: var(--bg-hover); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 0.6rem 0.8rem; }
+        .membership-card .label { font-size: 0.6rem; font-weight: 600; color: var(--text-secondary); }
+        .membership-card .value { font-size: 0.6rem; font-weight: 600; color: #2563EB; }
+        .btn-upgrade { width: 100%; background: #2563EB; color: #FFFFFF; font-weight: 600; font-size: 0.65rem; padding: 0.35rem 0; border: none; border-radius: var(--radius-sm); cursor: pointer; transition: background 0.15s ease, transform 0.15s ease; margin-top: 0.4rem; }
+        .btn-upgrade:hover { background: #1D4ED8; transform: scale(1.02); }
+
+        /* ===== Main Content ===== */
+        .main-content { margin-left: 250px; padding: 0 32px 32px 32px; min-height: 100vh; background: var(--bg-page); transition: margin-left 0.3s ease, background 0.3s ease; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+        /* ===== Top Header ===== */
+        .top-header { height: 64px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding: 0 0 0.5rem 0; margin-bottom: 0; background: var(--bg-page); flex-shrink: 0; padding-left: 0.5rem; }
+        .top-header .left { display: flex; align-items: center; gap: 0.75rem; }
+        .top-header .left .hamburger { font-size: 1rem; color: var(--text-secondary); cursor: pointer; display: none; transition: color 0.3s ease; }
+        .top-header .left .hamburger:hover { color: var(--text-primary); }
+        .top-header .left .breadcrumb { font-size: 0.65rem; color: var(--text-muted); font-weight: 500; }
+        .top-header .left .breadcrumb span { color: var(--text-secondary); }
+        .top-header .left .page-title { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); letter-spacing: -0.3px; }
+        .top-header .left .page-title .sub { font-size: 0.65rem; font-weight: 400; color: var(--text-muted); margin-left: 0.4rem; }
+        .top-header .right { display: flex; align-items: center; gap: 1rem; }
+        .top-header .right .search-wrap { position: relative; }
+        .top-header .right .search-wrap input { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 40px; padding: 0.3rem 0.8rem 0.3rem 2rem; font-size: 0.7rem; color: var(--text-primary); width: 160px; transition: all var(--transition); outline: none; }
+        .top-header .right .search-wrap input:focus { border-color: #2563EB; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10); }
+        .top-header .right .search-wrap i { position: absolute; left: 0.6rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.7rem; }
+        .top-header .right .icon-btn { color: var(--text-secondary); cursor: pointer; transition: color var(--transition), transform 0.15s ease; font-size: 1rem; position: relative; }
+        .top-header .right .icon-btn:hover { color: var(--text-primary); transform: scale(1.05); }
+        .top-header .right .icon-btn .dot { position: absolute; top: -2px; right: -3px; width: 7px; height: 7px; background: #EF4444; border-radius: 50%; border: 2px solid var(--bg-page); }
+        .top-header .right .avatar-wrap { display: flex; align-items: center; gap: 0.4rem; }
+        .top-header .right .avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--bg-active); color: #2563EB; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.65rem; cursor: pointer; border: 2px solid transparent; background-size: cover; background-position: center; }
+        .top-header .right .avatar:hover { border-color: #2563EB; }
+        .top-header .right .avatar-wrap .name { font-size: 0.7rem; font-weight: 500; color: var(--text-primary); }
+
+        /* ===== Settings Layout ===== */
+        .settings-layout { display: flex; flex: 1; overflow: hidden; gap: 0; margin-top: 0.5rem; }
+
+        /* ===== Settings Navigation ===== */
+        .settings-nav { width: 260px; flex-shrink: 0; padding-right: 1.5rem; overflow-y: auto; padding-top: 0.5rem; padding-bottom: 1rem; }
+        .settings-nav::-webkit-scrollbar { width: 3px; }
+        .settings-nav::-webkit-scrollbar-track { background: transparent; }
+        .settings-nav::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+        .settings-nav .nav-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0.6rem; border-radius: var(--radius-sm); cursor: pointer; transition: all var(--transition); font-size: 0.7rem; color: var(--text-secondary); text-decoration: none; position: relative; }
+        .settings-nav .nav-item:hover { background: var(--bg-hover); color: var(--text-primary); }
+        .settings-nav .nav-item.active { background: var(--bg-active); color: #2563EB; font-weight: 500; }
+        .settings-nav .nav-item.active::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 3px; height: 16px; background: #2563EB; border-radius: 0 3px 3px 0; }
+        .settings-nav .nav-item i { width: 0.9rem; text-align: center; font-size: 0.65rem; color: var(--text-muted); flex-shrink: 0; }
+        .settings-nav .nav-item.active i { color: #2563EB; }
+        .settings-nav .nav-item .desc { font-size: 0.5rem; color: var(--text-muted); display: block; margin-top: -0.05rem; }
+        .settings-nav .nav-item .label-wrap { flex: 1; min-width: 0; }
+        .settings-nav .nav-item .label-wrap .title { font-weight: 500; }
+
+        /* ===== Settings Content ===== */
+        .settings-content { flex: 1; overflow-y: auto; padding-right: 0.5rem; padding-bottom: 2rem; }
+        .settings-content::-webkit-scrollbar { width: 4px; }
+        .settings-content::-webkit-scrollbar-track { background: transparent; }
+        .settings-content::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+
+        /* ===== Cards ===== */
+        .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; margin-bottom: 1.25rem; transition: background 0.3s ease, border-color 0.3s ease, box-shadow var(--transition); }
+        .card:hover { box-shadow: var(--shadow-sm); }
+        .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.3rem; }
+        .card-header h3 { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); }
+        .card-header .sub { font-size: 0.6rem; color: var(--text-muted); font-weight: 400; margin-left: 0.3rem; }
+        .card-header .action-link { font-size: 0.6rem; font-weight: 500; color: #2563EB; cursor: pointer; }
+
+        /* ===== Form Elements ===== */
+        .form-group { margin-bottom: 0.8rem; }
+        .form-group label { display: block; font-size: 0.65rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.2rem; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.35rem 0.6rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-input); color: var(--text-primary); font-size: 0.7rem; transition: border-color var(--transition), background 0.3s ease, color 0.3s ease; outline: none; font-family: 'Inter', sans-serif; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #2563EB; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08); }
+        .form-group textarea { resize: vertical; min-height: 50px; }
+        .form-group .helper { font-size: 0.55rem; color: var(--text-muted); margin-top: 0.1rem; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+
+        /* ===== Avatar Upload ===== */
+        .avatar-upload { display: flex; align-items: center; gap: 1.25rem; }
+        .avatar-upload .avatar-large { width: 64px; height: 64px; border-radius: 50%; background: var(--bg-active); color: #2563EB; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.3rem; border: 2px solid var(--border-color); flex-shrink: 0; position: relative; overflow: hidden; background-size: cover; background-position: center; }
+        .avatar-upload .avatar-large .overlay { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); padding: 0.1rem 0; font-size: 0.4rem; font-weight: 600; color: white; text-align: center; cursor: pointer; opacity: 0; transition: opacity var(--transition); }
+        .avatar-upload .avatar-large:hover .overlay { opacity: 1; }
+        .avatar-upload .upload-actions .btn-upload { background: transparent; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 0.2rem 0.8rem; font-size: 0.65rem; font-weight: 500; color: var(--text-secondary); cursor: pointer; transition: all var(--transition); }
+        .avatar-upload .upload-actions .btn-upload:hover { border-color: #2563EB; color: #2563EB; background: var(--bg-active); }
+        .avatar-upload .upload-actions .btn-remove { background: transparent; border: none; color: var(--text-muted); font-size: 0.6rem; cursor: pointer; transition: color var(--transition); }
+        .avatar-upload .upload-actions .btn-remove:hover { color: #EF4444; }
+
+        /* ===== Toggle Switch ===== */
+        .toggle-group { display: flex; align-items: center; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px solid var(--border-color); }
+        .toggle-group:last-child { border-bottom: none; }
+        .toggle-group .info .title { font-size: 0.7rem; font-weight: 500; color: var(--text-primary); }
+        .toggle-group .info .desc { font-size: 0.55rem; color: var(--text-muted); }
+        .toggle-switch { width: 36px; height: 20px; border-radius: 40px; background: var(--bg-switch-off); cursor: pointer; transition: background 0.2s ease; position: relative; flex-shrink: 0; }
+        .toggle-switch.active { background: var(--bg-switch-on); }
+        .toggle-switch .thumb { width: 14px; height: 14px; border-radius: 50%; background: white; position: absolute; top: 3px; left: 3px; transition: transform 0.2s ease; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15); }
+        .toggle-switch.active .thumb { transform: translateX(16px); }
+
+        /* ===== Buttons ===== */
+        .btn-primary { background: #2563EB; color: #FFFFFF; font-weight: 600; font-size: 0.7rem; padding: 0.3rem 1rem; border: none; border-radius: var(--radius-sm); cursor: pointer; transition: background 0.15s ease, transform 0.15s ease; display: inline-flex; align-items: center; gap: 0.3rem; }
+        .btn-primary:hover { background: #1D4ED8; transform: scale(1.02); }
+        .btn-secondary { background: transparent; color: var(--text-secondary); font-weight: 500; font-size: 0.7rem; padding: 0.3rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); cursor: pointer; transition: all var(--transition); display: inline-flex; align-items: center; gap: 0.3rem; }
+        .btn-secondary:hover { background: var(--bg-hover); border-color: #94A3B8; }
+        .btn-group { display: flex; gap: 0.4rem; margin-top: 0.4rem; flex-wrap: wrap; }
+
+        /* ===== Danger Zone ===== */
+        .danger-zone { border: 1px solid #FCA5A5; background: #FEF2F2; border-radius: var(--radius-md); padding: 1rem; margin-top: 0.5rem; }
+        .dark .danger-zone { border-color: #7F1D1D; background: #1A1A2E; }
+        .danger-zone .title { font-size: 0.75rem; font-weight: 600; color: #DC2626; margin-bottom: 0.2rem; }
+        .danger-zone .desc { font-size: 0.65rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
+        .danger-zone .btn-danger { background: #DC2626; color: white; border: none; border-radius: var(--radius-sm); padding: 0.2rem 0.8rem; font-size: 0.65rem; font-weight: 600; cursor: pointer; transition: background 0.15s ease; }
+        .danger-zone .btn-danger:hover { background: #B91C1C; }
+        .danger-zone .btn-danger-outline { background: transparent; color: #DC2626; border: 1px solid #DC2626; border-radius: var(--radius-sm); padding: 0.2rem 0.8rem; font-size: 0.65rem; font-weight: 600; cursor: pointer; transition: all 0.15s ease; margin-left: 0.4rem; }
+        .danger-zone .btn-danger-outline:hover { background: #FEE2E2; }
+
+        /* ===== Toast ===== */
+        .toast-notification { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 0.4rem 0.8rem; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); font-size: 0.7rem; font-weight: 500; display: flex; align-items: center; gap: 0.5rem; z-index: 200; opacity: 0; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none; max-width: 90%; }
+        .toast-notification.show { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: auto; }
+        .toast-notification i { color: #16A34A; font-size: 0.8rem; }
+        .toast-notification .close { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0 0 0 0.3rem; font-size: 0.65rem; transition: color var(--transition); pointer-events: auto; }
+        .toast-notification .close:hover { color: var(--text-primary); }
+
+        /* ===== Modal ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.show {
+            display: flex;
+        }
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 1.5rem;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+        .modal .modal-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        .modal .modal-desc {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+        .modal .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.3); z-index: 39; }
+            .sidebar-overlay.active { display: block; }
+            .main-content { margin-left: 0; padding: 0 0.75rem 0.75rem 0.75rem; }
+            .top-header .left .hamburger { display: block; }
+            .top-header .left .breadcrumb { display: none; }
+            .top-header .left .page-title .sub { display: none; }
+            .top-header .right .search-wrap { display: none; }
+            .top-header .right .avatar-wrap .name { display: none; }
+            .settings-nav { width: 200px; padding-right: 0.75rem; }
+            .form-row { grid-template-columns: 1fr; }
+            .settings-layout { flex-direction: column; overflow-y: auto; }
+            .settings-content { padding-right: 0; }
+        }
+        @media (max-width: 640px) {
+            .top-header .left .page-title { font-size: 0.9rem; }
+            .top-header .left .page-title .sub { display: none; }
+            .top-header .right { gap: 0.5rem; }
+            .top-header .right .icon-btn { font-size: 0.85rem; }
+            .top-header .right .avatar { width: 26px; height: 26px; font-size: 0.55rem; }
+            .settings-nav { width: 100%; padding-right: 0; display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 0.2rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border-color); margin-bottom: 0.5rem; }
+            .settings-nav .nav-item { white-space: nowrap; padding: 0.2rem 0.4rem; font-size: 0.6rem; }
+            .settings-nav .nav-item .desc { display: none; }
+            .settings-layout { flex-direction: column; }
+            .form-row { grid-template-columns: 1fr; }
+            .card { padding: 0.75rem; }
+            .avatar-upload { flex-direction: column; align-items: flex-start; }
+            .btn-group { flex-direction: column; }
+            .btn-group .btn-primary, .btn-group .btn-secondary { width: 100%; justify-content: center; }
+            .card-header { flex-direction: column; align-items: flex-start; gap: 0.2rem; }
+        }
+        @media (max-width: 480px) {
+            .top-header { height: 56px; padding-left: 0.25rem; }
+            .top-header .right { gap: 0.4rem; }
+            .top-header .right .icon-btn { font-size: 0.75rem; }
+            .top-header .right .avatar { width: 24px; height: 24px; font-size: 0.5rem; }
+            .settings-nav .nav-item { font-size: 0.55rem; padding: 0.15rem 0.3rem; }
+            .settings-nav .nav-item i { font-size: 0.55rem; }
+            .danger-zone { padding: 0.75rem; }
+            .danger-zone .btn-danger, .danger-zone .btn-danger-outline { font-size: 0.6rem; padding: 0.15rem 0.6rem; }
+        }
+
+        /* ===== Dark Mode ===== */
+        .dark .danger-zone .btn-danger { background: #DC2626; }
+        .dark .danger-zone .btn-danger:hover { background: #B91C1C; }
+        .dark .danger-zone .btn-danger-outline { color: #F87171; border-color: #F87171; }
+        .dark .danger-zone .btn-danger-outline:hover { background: #1A1A2E; }
+        .dark .avatar-upload .avatar-large { border-color: #334155; }
+        .dark .avatar-upload .avatar-large .overlay { background: rgba(15, 23, 42, 0.8); }
+        .dark .toggle-group { border-color: #334155; }
+        .dark .form-group input, .dark .form-group select, .dark .form-group textarea { background: #0F172A; border-color: #334155; color: #F1F5F9; }
+        .dark .form-group input:focus, .dark .form-group select:focus, .dark .form-group textarea:focus { border-color: #60A5FA; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2); }
+        .dark .btn-secondary { color: #94A3B8; border-color: #334155; }
+        .dark .btn-secondary:hover { background: #0F172A; border-color: #475569; }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- ============================================================ -->
+    <!-- SIDEBAR                                                       -->
+    <!-- ============================================================ -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="logo-icon">SA</div>
+            <span>Solo AI</span>
+        </div>
+        <div class="sidebar-user">
+            <div class="avatar" id="sidebarAvatar">DL</div>
+            <div class="info">
+                <div class="name" id="sidebarName">Damian Lee</div>
+                <div class="plan"><span class="dot"></span> Free Plan</div>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="section-label">Main</div>
+            <a class="nav-link" href="dashboard.html"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a class="nav-link" href="ai-studio.html"><i class="fas fa-sparkles"></i> AI Studio</a>
+            <a class="nav-link" href="content.html"><i class="fas fa-folder"></i> Content</a>
+            <a class="nav-link" href="publishing.html"><i class="fas fa-calendar-alt"></i> Publishing</a>
+            <a class="nav-link" href="analytics.html"><i class="fas fa-chart-line"></i> Analytics</a>
+            <a class="nav-link" href="community.html"><i class="fas fa-users"></i> Community <span class="badge">24</span></a>
+            <a class="nav-link" href="courses.html"><i class="fas fa-graduation-cap"></i> Courses</a>
+            <a class="nav-link" href="marketplace.html"><i class="fas fa-store"></i> Marketplace <span class="badge">12</span></a>
+            <a class="nav-link" href="support.html"><i class="fas fa-headset"></i> Support <span class="badge">4</span></a>
+            <a class="nav-link active" href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+        </nav>
+        <div class="sidebar-bottom">
+            <div class="membership-card">
+                <div class="flex items-center justify-between">
+                    <span class="label">Membership</span>
+                    <span class="value">Free</span>
+                </div>
+                <button class="btn-upgrade" onclick="window.location.href='marketplace.html'">⬆ View Plans</button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ============================================================ -->
+    <!-- MAIN CONTENT                                                  -->
+    <!-- ============================================================ -->
+    <div class="main-content" id="mainContent">
+
+        <!-- TOP HEADER -->
+        <header class="top-header">
+            <div class="left">
+                <div class="hamburger" id="menuToggle"><i class="fas fa-bars"></i></div>
+                <div class="breadcrumb">Dashboard / <span>Settings</span></div>
+                <div class="page-title">
+                    Settings
+                    <span class="sub">Manage your account, workspace, AI preferences, and connected services.</span>
+                </div>
+            </div>
+            <div class="right">
+                <div class="search-wrap">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search..." id="globalSearch" />
+                </div>
+                <div class="icon-btn" id="notifBtn">
+                    <i class="fas fa-bell"></i>
+                    <span class="dot"></span>
+                </div>
+                <div class="icon-btn" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </div>
+                <div class="avatar-wrap">
+                    <div class="avatar" id="headerAvatar">DL</div>
+                    <span class="name" id="headerName">Damian</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- ============================================================ -->
+        <!-- SETTINGS LAYOUT                                               -->
+        <!-- ============================================================ -->
+        <div class="settings-layout">
+
+            <!-- SETTINGS NAVIGATION -->
+            <nav class="settings-nav" id="settingsNav">
+                <div class="nav-item active" data-section="profile"><i class="fas fa-user"></i><div class="label-wrap"><div class="title">Profile</div><span class="desc">Personal information</span></div></div>
+                <div class="nav-item" data-section="workspace"><i class="fas fa-building"></i><div class="label-wrap"><div class="title">Workspace</div><span class="desc">Team settings</span></div></div>
+                <div class="nav-item" data-section="connected"><i class="fas fa-plug"></i><div class="label-wrap"><div class="title">Connected Accounts</div><span class="desc">Social platforms</span></div></div>
+                <div class="nav-item" data-section="ai"><i class="fas fa-robot"></i><div class="label-wrap"><div class="title">AI Preferences</div><span class="desc">AI model settings</span></div></div>
+                <div class="nav-item" data-section="notifications"><i class="fas fa-bell"></i><div class="label-wrap"><div class="title">Notifications</div><span class="desc">Alert preferences</span></div></div>
+                <div class="nav-item" data-section="publishing"><i class="fas fa-calendar-alt"></i><div class="label-wrap"><div class="title">Publishing</div><span class="desc">Content defaults</span></div></div>
+                <div class="nav-item" data-section="billing"><i class="fas fa-credit-card"></i><div class="label-wrap"><div class="title">Billing &amp; Subscription</div><span class="desc">Plan &amp; payments</span></div></div>
+                <div class="nav-item" data-section="security"><i class="fas fa-shield-alt"></i><div class="label-wrap"><div class="title">Security</div><span class="desc">Password &amp; 2FA</span></div></div>
+                <div class="nav-item" data-section="api"><i class="fas fa-code"></i><div class="label-wrap"><div class="title">API &amp; Integrations</div><span class="desc">Third-party services</span></div></div>
+                <div class="nav-item" data-section="storage"><i class="fas fa-database"></i><div class="label-wrap"><div class="title">Storage</div><span class="desc">Usage &amp; limits</span></div></div>
+                <div class="nav-item" data-section="appearance"><i class="fas fa-palette"></i><div class="label-wrap"><div class="title">Appearance</div><span class="desc">Theme &amp; layout</span></div></div>
+                <div class="nav-item" data-section="language"><i class="fas fa-globe"></i><div class="label-wrap"><div class="title">Language &amp; Region</div><span class="desc">Localization</span></div></div>
+                <div class="nav-item" data-section="team"><i class="fas fa-users"></i><div class="label-wrap"><div class="title">Team Members</div><span class="desc">Invite &amp; manage</span></div></div>
+                <div class="nav-item" data-section="privacy"><i class="fas fa-lock"></i><div class="label-wrap"><div class="title">Privacy</div><span class="desc">Data controls</span></div></div>
+                <div class="nav-item" data-section="about"><i class="fas fa-info-circle"></i><div class="label-wrap"><div class="title">About</div><span class="desc">Version &amp; support</span></div></div>
+            </nav>
+
+            <!-- SETTINGS CONTENT -->
+            <div class="settings-content" id="settingsContent">
+                <!-- Profile Section -->
+                <div class="settings-section" id="section-profile">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Profile <span class="sub">Manage your personal information</span></h3>
+                        </div>
+                        <div class="avatar-upload">
+                            <div class="avatar-large" id="profileAvatarLarge">DL
+                                <div class="overlay" id="avatarOverlay">Change Photo</div>
+                            </div>
+                            <div class="upload-actions">
+                                <button class="btn-upload" id="uploadAvatarBtn"><i class="fas fa-upload"></i> Upload Photo</button>
+                                <button class="btn-remove" id="removeAvatarBtn"><i class="fas fa-trash-alt"></i> Remove</button>
+                            </div>
+                        </div>
+                        <input type="file" id="avatarFileInput" accept="image/*" style="position:fixed; left:-9999px; opacity:0;" />
+                        <div class="form-row" style="margin-top:0.8rem;">
+                            <div class="form-group"><label>Full Name</label><input type="text" id="profileName" value="Damian Lee" /></div>
+                            <div class="form-group"><label>Username</label><input type="text" id="profileUsername" value="damianlee" /><div class="helper">https://soloai.com/@damianlee</div></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Email Address</label><input type="email" id="profileEmail" value="damian@soloai.com" /></div>
+                            <div class="form-group"><label>Job Title</label><input type="text" id="profileJobTitle" value="Content Creator & Strategist" /></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Company</label><input type="text" id="profileCompany" value="Solo AI" /></div>
+                            <div class="form-group"><label>Country</label><select id="profileCountry"><option selected>United States</option><option>Canada</option><option>United Kingdom</option><option>Australia</option></select></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Time Zone</label><select id="profileTimezone"><option selected>America/New_York (EST)</option><option>America/Los_Angeles (PST)</option><option>Europe/London (GMT)</option></select></div>
+                            <div class="form-group"><label>Language</label><select id="profileLanguage"><option selected>English (US)</option><option>English (UK)</option><option>Spanish</option></select></div>
+                        </div>
+                        <div class="form-group"><label>Bio</label><textarea id="profileBio" rows="2">Digital content creator and strategist helping creators grow their audience through AI-powered tools.</textarea></div>
+                        <div class="btn-group">
+                            <button class="btn-primary save-btn" data-section="profile"><i class="fas fa-save"></i> Save Changes</button>
+                            <button class="btn-secondary">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Workspace Section -->
+                <div class="settings-section" id="section-workspace" style="display:none;">
+                    <div class="card">
+                        <div class="card-header"><h3>Workspace <span class="sub">Manage your team workspace</span></h3></div>
+                        <div class="form-group"><label>Workspace Name</label><input type="text" value="Solo AI Creators" /></div>
+                        <div class="form-group"><label>Workspace URL</label><input type="text" value="soloai" /><div class="helper">https://soloai.com/workspace/soloai</div></div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Default Time Zone</label><select><option selected>America/New_York (EST)</option><option>America/Los_Angeles (PST)</option><option>Europe/London (GMT)</option></select></div>
+                            <div class="form-group"><label>Default Language</label><select><option selected>English (US)</option><option>English (UK)</option><option>Spanish</option></select></div>
+                        </div>
+                        <div class="form-group"><label>Workspace Description</label><textarea rows="2">A community of creators building the future of content with AI.</textarea></div>
+                        <div class="toggle-group"><div class="info"><div class="title">Auto-save workspace changes</div><div class="desc">Automatically save all workspace settings changes</div></div><div class="toggle-switch active"><div class="thumb"></div></div></div>
+                        <div class="toggle-group"><div class="info"><div class="title">Workspace visibility</div><div class="desc">Make workspace visible to all team members</div></div><div class="toggle-switch active"><div class="thumb"></div></div></div>
+                        <div class="btn-group" style="margin-top:0.5rem;"><button class="btn-primary save-btn" data-section="workspace"><i class="fas fa-save"></i> Save Workspace</button></div>
+                    </div>
+                </div>
+
+                <!-- Connected Accounts Section -->
+                <div class="settings-section" id="section-connected" style="display:none;">
+                    <div class="card">
+                        <div class="card-header"><h3>Connected Accounts <span class="sub">Link your social platforms</span></h3><span class="action-link" onclick="window.location.href='connect-accounts.html'">+ Connect New</span></div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
+                            <div style="display:flex;align-items:center;gap:0.5rem;padding:0.3rem 0.5rem;background:var(--bg-hover);border-radius:var(--radius-sm);border:1px solid var(--border-color);"><i class="fab fa-youtube" style="color:#FF0000;font-size:1.2rem;"></i><div style="flex:1;"><div style="font-size:0.65rem;font-weight:500;color:var(--text-primary);">YouTube</div><div style="font-size:0.5rem;color:var(--text-muted);">● Disconnected</div></div><button class="connect-btn" data-platform="YouTube" style="background:transparent;border:none;color:#2563EB;font-size:0.6rem;cursor:pointer;">Connect</button></div>
+                            <div style="display:flex;align-items:center;gap:0.5rem;padding:0.3rem 0.5rem;background:var(--bg-hover);border-radius:var(--radius-sm);border:1px solid var(--border-color);"><i class="fab fa-instagram" style="color:#E4405F;font-size:1.2rem;"></i><div style="flex:1;"><div style="font-size:0.65rem;font-weight:500;color:var(--text-primary);">Instagram</div><div style="font-size:0.5rem;color:var(--text-muted);">● Disconnected</div></div><button class="connect-btn" data-platform="Instagram" style="background:transparent;border:none;color:#2563EB;font-size:0.6rem;cursor:pointer;">Connect</button></div>
+                            <div style="display:flex;align-items:center;gap:0.5rem;padding:0.3rem 0.5rem;background:var(--bg-hover);border-radius:var(--radius-sm);border:1px solid var(--border-color);"><i class="fab fa-facebook-f" style="color:#1877F2;font-size:1.2rem;"></i><div style="flex:1;"><div style="font-size:0.65rem;font-weight:500;color:var(--text-primary);">Facebook Page</div><div style="font-size:0.5rem;color:var(--text-muted);">● Disconnected</div></div><button class="connect-btn" data-platform="Facebook" style="background:transparent;border:none;color:#2563EB;font-size:0.6rem;cursor:pointer;">Connect</button></div>
+                            <div style="display:flex;align-items:center;gap:0.5rem;padding:0.3rem 0.5rem;background:var(--bg-hover);border-radius:var(--radius-sm);border:1px solid var(--border-color);"><i class="fab fa-tiktok" style="color:#00F2EA;font-size:1.2rem;"></i><div style="flex:1;"><div style="font-size:0.65rem;font-weight:500;color:var(--text-primary);">TikTok</div><div style="font-size:0.5rem;color:var(--text-muted);">● Disconnected</div></div><button class="connect-btn" data-platform="TikTok" style="background:transparent;border:none;color:#2563EB;font-size:0.6rem;cursor:pointer;">Connect</button></div>
+                            <div style="display:flex;align-items:center;gap:0.5rem;padding:0.3rem 0.5rem;background:var(--bg-hover);border-radius:var(--radius-sm);border:1px solid var(--border-color);"><i class="fab fa-linkedin-in" style="color:#0A66C2;font-size:1.2rem;"></i><div style="flex:1;"><div style="font-size:0.65rem;font-weight:500;color:var(--text-primary);">LinkedIn</div><div style="font-size:0.5rem;color:var(--text-muted);">● Disconnected</div></div><button class="connect-btn" data-platform="LinkedIn" style="background:transparent;border:none;color:#2563EB;font-size:0.6rem;cursor:pointer;">Connect</button></div>
+                            <div style="display:flex;align-items:center;gap:0.5rem;padding:0.3rem 0.5rem;background:var(--bg-hover);border-radius:var(--radius-sm);border:1px solid var(--border-color);"><i class="fab fa-pinterest" style="color:#E60023;font-size:1.2rem;"></i><div style="flex:1;"><div style="font-size:0.65rem;font-weight:500;color:var(--text-primary);">Pinterest</div><div style="font-size:0.5rem;color:var(--text-muted);">● Disconnected</div></div><button class="connect-btn" data-platform="Pinterest" style="background:transparent;border:none;color:#2563EB;font-size:0.6rem;cursor:pointer;">Connect</button></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Preferences Section -->
+                <div class="settings-section" id="section-ai" style="display:none;">
+                    <div class="card">
+                        <div class="card-header"><h3>AI Preferences <span class="sub">Configure your AI content generation</span></h3></div>
+                        <div class="form-group"><label>Default AI Model</label><select><option selected>Solo AI Pro</option><option>GPT-4 Turbo</option><option>Claude 3 Opus</option></select></div>
+                        <div class="form-group"><label>Creativity Level</label><div style="display:flex;align-items:center;gap:0.5rem;"><span style="font-size:0.55rem;color:var(--text-muted);">Precise</span><input type="range" min="0" max="100" value="72" style="flex:1;accent-color:#2563EB;" /><span style="font-size:0.55rem;color:var(--text-muted);">Creative</span><span style="font-size:0.55rem;font-weight:600;color:var(--text-primary);min-width:2rem;text-align:right;">72%</span></div></div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Response Length</label><select><option>Short</option><option selected>Medium</option><option>Long</option></select></div>
+                            <div class="form-group"><label>Writing Tone</label><select><option selected>Professional</option><option>Casual</option><option>Friendly</option></select></div>
+                        </div>
+                        <div class="form-group"><label>Brand Voice</label><input type="text" value="Modern, helpful, professional" /><div class="helper">Describe your brand's voice for AI-generated content</div></div>
+                        <div class="toggle-group"><div class="info"><div class="title">Prompt Memory</div><div class="desc">Remember previous prompts for context</div></div><div class="toggle-switch active"><div class="thumb"></div></div></div>
+                        <div class="toggle-group"><div class="info"><div class="title">Smart Suggestions</div><div class="desc">AI-powered content suggestions while writing</div></div><div class="toggle-switch active"><div class="thumb"></div></div></div>
+                        <div class="toggle-group"><div class="info"><div class="title">Auto SEO Optimization</div><div class="desc">Automatically optimize content for search engines</div></div><div class="toggle-switch active"><div class="thumb"></div></div></div>
+                        <div class="btn-group" style="margin-top:0.5rem;"><button class="btn-primary save-btn" data-section="ai"><i class="fas fa-save"></i> Save Preferences</button></div>
+                    </div>
+                </div>
+
+                <!-- Notifications Section -->
+                <div class="settings-section" id="section-notifications" style="display:none;">
+                    <div class="card">
+                        <div class="card-header"><h3>Notifications <span class="sub">Manage your alert preferences</span></h3></div>
+                        <div class="toggle-group"><div class="info"><div class="title">Email Notifications</div><div class="desc">Receive notifications via email</div></div><div class="toggle-switch active"><div class="thumb"></div></div></div>
+                        <div class="toggle-group"><div class="info"><div class="title">Push Notifications</div><div class="desc">Receive browser push notifications</div></div><div class="toggle-switch active"><div class="thumb"></div></div></div>
+                        <div class="toggle-group"><div class="info"><div class="title">Product Updates</div><div class="desc">New features and improvements</div></div><div class="toggle-switch active"><div class="thumb"></div></div></div>
+                        <div class="toggle-group"><div class="info"><div class="title">Marketing Emails</div><div class="desc">Promotions, events, and newsletters</div></div><div class="toggle-switch"><div class="thumb"></div></div></div>
+                        <div class="toggle-group"><div class="info"><div class="title">Community Mentions</div><div class="desc">When someone mentions you in the community</div></div><div class="toggle-switch active"><div class="thumb"></div></div></div>
+                        <div class="toggle-group"><div class="info"><div class="title">Security Alerts</div><div class="desc">Suspicious login attempts and security events</div></div><div class="toggle-switch active"><div class="thumb"></div></div></div>
+                        <div class="btn-group" style="margin-top:0.5rem;"><button class="btn-primary save-btn" data-section="notifications"><i class="fas fa-save"></i> Save Preferences</button></div>
+                    </div>
+                </div>
+
+                <!-- Publishing Section -->
+                <div class="settings-section" id="section-publishing" style="display:none;">
+                    <div class="card">
+                        <div class="card-header"><h3>Publishing Preferences <span class="sub">Configure content publishing defaults</span></h3></div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Default Publish Time</label><input type="time" value="10:00" /></div>
+                            <div class="form-group"><label>Time Zone</label><select><option selected>America/New_York (EST)</option><option>America/Los_Angeles (PST)</option></select></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Content Approval</label><select><option selected>Auto-approve</option><option>Require approval</option></select></div>
+                            <div class="form-group"><label>Default Platforms</label><select><option>All connected platforms</option><option>YouTube only</option><option selected>Custom selection</option></select></div>
+                        </div>
+                        <div class="toggle-group"><div class="info"><div class="title">Auto Scheduling</div><div class="desc">Automatically schedule posts at optimal times</div></div><div class="toggle-switch active"><div class="thumb"></div></div></div>
+                        <div class="toggle-group"><div class="info"><div class="title">Cross-posting</div><div class="desc">Share content across multiple platforms</div></div><div class="toggle-switch active"><div class="thumb"></div></div></div>
+                        <div class="btn-group" style="margin-top:0.5rem;"><button class="btn-primary save-btn" data-section="publishing"><i class="fas fa-save"></i> Save Preferences</button></div>
+                    </div>
+                </div>
+
+                <!-- Billing Section -->
+                <div class="settings-section" id="section-billing" style="display:none;">
+                    <div class="card">
+                        <div class="card-header"><h3>Billing &amp; Subscription <span class="sub">Manage your plan and payments</span></h3><span class="action-link" style="background:#2563EB;color:white;padding:0.1rem 0.6rem;border-radius:40px;font-size:0.6rem;">Upgrade Plan</span></div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:0.5rem;margin-bottom:0.5rem;">
+                            <div style="background:var(--bg-hover);border-radius:var(--radius-sm);padding:0.4rem;text-align:center;"><div style="font-size:0.8rem;font-weight:700;color:var(--text-primary);">Free Plan</div><div style="font-size:0.5rem;color:var(--text-muted);">Current Plan</div></div>
+                            <div style="background:var(--bg-hover);border-radius:var(--radius-sm);padding:0.4rem;text-align:center;"><div style="font-size:0.8rem;font-weight:700;color:var(--text-primary);">$0/mo</div><div style="font-size:0.5rem;color:var(--text-muted);">Monthly Price</div></div>
+                            <div style="background:var(--bg-hover);border-radius:var(--radius-sm);padding:0.4rem;text-align:center;"><div style="font-size:0.8rem;font-weight:700;color:var(--text-primary);">—</div><div style="font-size:0.5rem;color:var(--text-muted);">Renewal Date</div></div>
+                            <div style="background:var(--bg-hover);border-radius:var(--radius-sm);padding:0.4rem;text-align:center;"><div style="font-size:0.8rem;font-weight:700;color:var(--text-primary);">—</div><div style="font-size:0.5rem;color:var(--text-muted);">Payment Method</div></div>
+                        </div>
+                        <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+                            <button class="btn-secondary" style="font-size:0.6rem;padding:0.15rem 0.6rem;"><i class="fas fa-file-invoice"></i> Invoices</button>
+                            <button class="btn-secondary" style="font-size:0.6rem;padding:0.15rem 0.6rem;"><i class="fas fa-history"></i> Billing History</button>
+                            <button class="btn-secondary" style="font-size:0.6rem;padding:0.15rem 0.6rem;color:#2563EB;border-color:#2563EB;"><i class="fas fa-credit-card"></i> Manage Billing</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Section -->
+                <div class="settings-section" id="section-security" style="display:none;">
+                    <div class="card">
+                        <div class="card-header"><h3>Security <span class="sub">Protect your account</span></h3></div>
+                        <div class="form-group"><label>Current Password</label><input type="password" value="••••••••" /></div>
+                        <div class="form-row">
+                            <div class="form-group"><label>New Password</label><input type="password" placeholder="Enter new password" /></div>
+                            <div class="form-group"><label>Confirm New Password</label><input type="password" placeholder="Confirm new password" /></div>
+                        </div>
+                        <button class="btn-primary" style="font-size:0.65rem;margin-bottom:0.5rem;"><i class="fas fa-key"></i> Change Password</button>
+                        <div style="border-top:1px solid var(--border-color);padding-top:0.5rem;">
+                            <div class="toggle-group"><div class="info"><div class="title">Two-Factor Authentication</div><div class="desc">Add an extra layer of security to your account</div></div><div class="toggle-switch"><div class="thumb"></div></div></div>
+                            <div class="toggle-group"><div class="info"><div class="title">Recovery Codes</div><div class="desc">Generate backup codes for account recovery</div></div><button class="btn-secondary" style="font-size:0.55rem;padding:0.1rem 0.5rem;">Generate</button></div>
+                        </div>
+                        <div style="border-top:1px solid var(--border-color);padding-top:0.5rem;margin-top:0.3rem;">
+                            <div style="font-size:0.65rem;font-weight:600;color:var(--text-primary);margin-bottom:0.2rem;">Active Sessions</div>
+                            <div style="display:flex;justify-content:space-between;font-size:0.6rem;color:var(--text-secondary);padding:0.15rem 0;border-bottom:1px solid var(--border-color);">
+                                <span><i class="fas fa-desktop"></i> Chrome on Windows</span>
+                                <span>New York, US</span>
+                                <span style="color:var(--text-muted);">Current session</span>
+                            </div>
+                            <div style="display:flex;justify-content:space-between;font-size:0.6rem;color:var(--text-secondary);padding:0.15rem 0;border-bottom:1px solid var(--border-color);">
+                                <span><i class="fas fa-mobile-alt"></i> Safari on iPhone</span>
+                                <span>Los Angeles, US</span>
+                                <span style="color:var(--text-muted);">2 days ago</span>
+                            </div>
+                            <button class="btn-secondary sign-out-btn" style="font-size:0.55rem;padding:0.1rem 0.5rem;margin-top:0.2rem;color:#EF4444;border-color:#EF4444;"><i class="fas fa-sign-out-alt"></i> Sign Out Everywhere</button>
+                        </div>
+                        <div class="danger-zone" style="margin-top:0.5rem;">
+                            <div class="title">⚠️ Danger Zone</div>
+                            <div class="desc">Once you delete your account, all data will be permanently removed. This action cannot be undone.</div>
+                            <button class="btn-danger">Delete Account</button>
+                            <button class="btn-danger-outline sign-out-btn">Sign Out Everywhere</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API Section -->
+                <div class="settings-section" id="section-api" style="display:none;">
+                    <div class="card">
+                        <div class="card-header"><h3>API &amp; Integrations <span class="sub">Manage third-party connections</span></h3></div>
+                        <div class="form-group"><label>API Key</label><div style="display:flex;align-items:center;gap:0.4rem;"><input type="text" id="apiKeyInput" value="sa_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" readonly style="font-family:monospace;font-size:0.6rem;background:var(--bg-hover);flex:1;" /><button class="btn-secondary" id="copyApiKeyBtn" style="font-size:0.5rem;padding:0.1rem 0.4rem;"><i class="fas fa-copy"></i></button><button class="btn-secondary" id="regenerateApiKeyBtn" style="font-size:0.5rem;padding:0.1rem 0.4rem;color:#EF4444;border-color:#EF4444;"><i class="fas fa-redo"></i> Regenerate</button></div><div class="helper">Use this key to authenticate API requests. Keep it secure.</div></div>
+                    </div>
+                </div>
+
+                <!-- Storage Section -->
+                <div class="settings-section" id="section-storage" style="display:none;">
+                    <div class="card">
+                        <div class="card-header"><h3>Storage <span class="sub">Manage your storage usage</span></h3><span class="action-link" style="background:#2563EB;color:white;padding:0.1rem 0.6rem;border-radius:40px;font-size:0.6rem;">Upgrade Storage</span></div>
+                        <div style="width:100%;height:4px;background:var(--border-color);border-radius:4px;overflow:hidden;margin-bottom:0.3rem;"><div style="width:0%;height:100%;background:#2563EB;border-radius:4px;"></div></div>
+                        <div style="display:flex;justify-content:space-between;font-size:0.6rem;color:var(--text-muted);"><span style="font-weight:500;color:var(--text-secondary);">0 GB used</span><span>5 GB total</span></div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.3rem;margin-top:0.3rem;">
+                            <div style="background:var(--bg-hover);border-radius:var(--radius-sm);padding:0.3rem;text-align:center;"><div style="font-size:0.7rem;font-weight:700;color:var(--text-primary);">0</div><div style="font-size:0.45rem;color:var(--text-muted);">Images</div></div>
+                            <div style="background:var(--bg-hover);border-radius:var(--radius-sm);padding:0.3rem;text-align:center;"><div style="font-size:0.7rem;font-weight:700;color:var(--text-primary);">0</div><div style="font-size:0.45rem;color:var(--text-muted);">Videos</div></div>
+                            <div style="background:var(--bg-hover);border-radius:var(--radius-sm);padding:0.3rem;text-align:center;"><div style="font-size:0.7rem;font-weight:700;color:var(--text-primary);">0</div><div style="font-size:0.45rem;color:var(--text-muted);">Documents</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Appearance Section -->
+                <div class="settings-section" id="section-appearance" style="display:none;">
+                    <div class="card">
+                        <div class="card-header"><h3>Appearance <span class="sub">Customize your interface</span></h3></div>
+                        <div class="form-group"><label>Theme</label><div style="display:flex;gap:0.3rem;">
+                            <button class="btn-secondary theme-btn" data-theme="light" style="padding:0.15rem 0.6rem;border-color:#2563EB;color:#2563EB;background:var(--bg-active);">Light</button>
+                            <button class="btn-secondary theme-btn" data-theme="dark" style="padding:0.15rem 0.6rem;">Dark</button>
+                            <button class="btn-secondary theme-btn" data-theme="system" style="padding:0.15rem 0.6rem;">System</button>
+                        </div></div>
+                        <div class="form-group"><label>Interface Density</label><div style="display:flex;gap:0.3rem;"><button class="btn-secondary" style="padding:0.15rem 0.6rem;">Compact</button><button class="btn-secondary" style="padding:0.15rem 0.6rem;border-color:#2563EB;color:#2563EB;background:var(--bg-active);">Comfortable</button><button class="btn-secondary" style="padding:0.15rem 0.6rem;">Spacious</button></div></div>
+                        <div class="toggle-group"><div class="info"><div class="title">Rounded Corners</div><div class="desc">Enable rounded corners for UI elements</div></div><div class="toggle-switch active"><div class="thumb"></div></div></div>
+                        <div class="toggle-group"><div class="info"><div class="title">Animations</div><div class="desc">Enable smooth UI animations</div></div><div class="toggle-switch active"><div class="thumb"></div></div></div>
+                        <div class="btn-group" style="margin-top:0.5rem;"><button class="btn-primary save-btn" data-section="appearance"><i class="fas fa-save"></i> Save Appearance</button></div>
+                    </div>
+                </div>
+
+                <!-- Language Section -->
+                <div class="settings-section" id="section-language" style="display:none;">
+                    <div class="card">
+                        <div class="card-header"><h3>Language &amp; Region <span class="sub">Localization settings</span></h3></div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Language</label><select><option selected>English (US)</option><option>English (UK)</option><option>Spanish</option></select></div>
+                            <div class="form-group"><label>Region</label><select><option selected>United States</option><option>Canada</option><option>United Kingdom</option></select></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Date Format</label><select><option selected>MM/DD/YYYY</option><option>DD/MM/YYYY</option></select></div>
+                            <div class="form-group"><label>Time Format</label><select><option selected>12-hour (AM/PM)</option><option>24-hour</option></select></div>
+                        </div>
+                        <div class="btn-group" style="margin-top:0.5rem;"><button class="btn-primary save-btn" data-section="language"><i class="fas fa-save"></i> Save Settings</button></div>
+                    </div>
+                </div>
+
+                <!-- Team Section -->
+                <div class="settings-section" id="section-team" style="display:none;">
+                    <div class="card">
+                        <div class="card-header"><h3>Team Members <span class="sub">Manage your team</span></h3><button class="btn-primary" id="inviteMemberBtn" style="font-size:0.6rem;padding:0.15rem 0.6rem;"><i class="fas fa-user-plus"></i> Invite Member</button></div>
+                        <div style="border:1px solid var(--border-color);border-radius:var(--radius-sm);overflow:hidden;">
+                            <div style="display:grid;grid-template-columns:1fr 1fr 0.8fr 0.8fr;padding:0.25rem 0.5rem;background:var(--bg-hover);font-size:0.55rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.3px;border-bottom:1px solid var(--border-color);"><span>Name</span><span>Email</span><span>Role</span><span>Status</span></div>
+                            <div style="display:grid;grid-template-columns:1fr 1fr 0.8fr 0.8fr;padding:0.25rem 0.5rem;font-size:0.65rem;color:var(--text-secondary);border-bottom:1px solid var(--border-color);align-items:center;"><span style="font-weight:500;color:var(--text-primary);" id="teamOwnerName">Damian Lee</span><span id="teamOwnerEmail">damian@soloai.com</span><span><span style="background:var(--bg-active);color:#2563EB;padding:0.05rem 0.3rem;border-radius:40px;font-size:0.5rem;font-weight:600;">Owner</span></span><span style="color:#16A34A;">Active</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Privacy Section -->
+                <div class="settings-section" id="section-privacy" style="display:none;">
+                    <div class="card">
+                        <div class="card-header"><h3>Privacy <span class="sub">Control your data and privacy</span></h3></div>
+                        <div class="toggle-group"><div class="info"><div class="title">Analytics Sharing</div><div class="desc">Share anonymized usage data to help improve the platform</div></div><div class="toggle-switch active"><div class="thumb"></div></div></div>
+                        <div class="toggle-group"><div class="info"><div class="title">Personalized Recommendations</div><div class="desc">Receive personalized content and feature recommendations</div></div><div class="toggle-switch active"><div class="thumb"></div></div></div>
+                        <div style="border-top:1px solid var(--border-color);padding-top:0.5rem;margin-top:0.3rem;">
+                            <div style="font-size:0.65rem;font-weight:600;color:var(--text-primary);margin-bottom:0.2rem;">Data Controls</div>
+                            <div style="display:flex;gap:0.3rem;flex-wrap:wrap;"><button class="btn-secondary" style="font-size:0.6rem;padding:0.15rem 0.6rem;"><i class="fas fa-file-export"></i> Download My Data</button><button class="btn-secondary" style="font-size:0.6rem;padding:0.15rem 0.6rem;color:#EF4444;border-color:#EF4444;"><i class="fas fa-trash-alt"></i> Delete Personal Data</button></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- About Section -->
+                <div class="settings-section" id="section-about" style="display:none;">
+                    <div class="card">
+                        <div class="card-header"><h3>About <span class="sub">Version &amp; support information</span></h3></div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.3rem;">
+                            <div><div style="font-size:0.55rem;color:var(--text-muted);">Application Version</div><div style="font-size:0.75rem;font-weight:600;color:var(--text-primary);">v3.2.1</div></div>
+                            <div><div style="font-size:0.55rem;color:var(--text-muted);">Build</div><div style="font-size:0.75rem;font-weight:600;color:var(--text-primary);">#2025.02.15</div></div>
+                        </div>
+                        <div style="display:flex;gap:0.3rem;flex-wrap:wrap;margin-top:0.3rem;"><button class="btn-secondary" style="font-size:0.55rem;padding:0.1rem 0.5rem;"><i class="fas fa-file-alt"></i> Release Notes</button><button class="btn-secondary" style="font-size:0.55rem;padding:0.1rem 0.5rem;"><i class="fas fa-headset"></i> Contact Support</button><button class="btn-secondary" style="font-size:0.55rem;padding:0.1rem 0.5rem;"><i class="fas fa-life-ring"></i> Help Center</button></div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Sign Out Confirmation Modal -->
+    <div class="modal-overlay" id="signOutModal">
+        <div class="modal">
+            <div class="modal-title">Sign Out</div>
+            <div class="modal-desc">Are you sure you want to sign out?</div>
+            <div class="modal-buttons">
+                <button class="btn-primary" id="confirmSignOut">Yes</button>
+                <button class="btn-secondary" id="cancelSignOut">No</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SCRIPTS                                                       -->
+    <!-- ============================================================ -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // ===== THEME =====
+            const themeToggle = document.getElementById('themeToggle');
+            let savedTheme = localStorage.getItem('theme') || 'light'; // default light
+            function applyTheme(theme) {
+                if (theme === 'dark') {
+                    document.body.classList.add('dark');
+                    themeToggle.querySelector('i').className = 'fas fa-sun';
+                } else {
+                    document.body.classList.remove('dark');
+                    themeToggle.querySelector('i').className = 'fas fa-moon';
+                }
+                localStorage.setItem('theme', theme);
+                // Update theme buttons in Appearance
+                document.querySelectorAll('.theme-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.dataset.theme === theme) {
+                        btn.classList.add('active');
+                        btn.style.borderColor = '#2563EB';
+                        btn.style.color = '#2563EB';
+                        btn.style.background = 'var(--bg-active)';
+                    } else {
+                        btn.style.borderColor = '';
+                        btn.style.color = '';
+                        btn.style.background = '';
+                    }
+                });
+            }
+            applyTheme(savedTheme);
+
+            themeToggle.addEventListener('click', function() {
+                const isDark = document.body.classList.contains('dark');
+                applyTheme(isDark ? 'light' : 'dark');
+            });
+
+            // Theme buttons in Appearance
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const theme = this.dataset.theme;
+                    applyTheme(theme);
+                });
+            });
+
+            // ===== SIDEBAR =====
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const menuToggle = document.getElementById('menuToggle');
+
+            menuToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('active');
+            });
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                    document.getElementById('signOutModal').classList.remove('show');
+                }
+            });
+
+            // ===== TOAST =====
+            let toastTimeout;
+
+            function showToast(msg, icon = 'fa-check-circle') {
+                const existing = document.querySelector('.toast-notification');
+                if (existing) existing.remove();
+                clearTimeout(toastTimeout);
+                const toast = document.createElement('div');
+                toast.className = 'toast-notification';
+                toast.style.cssText = `
+                    position: fixed;
+                    bottom: 1.5rem;
+                    left: 50%;
+                    transform: translateX(-50%) translateY(20px);
+                    background: var(--bg-card);
+                    border: 1px solid var(--border-color);
+                    color: var(--text-primary);
+                    padding: 0.4rem 0.8rem;
+                    border-radius: var(--radius-md);
+                    box-shadow: var(--shadow-lg);
+                    font-size: 0.7rem;
+                    font-weight: 500;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    z-index: 200;
+                    opacity: 0;
+                    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+                    pointer-events: none;
+                    max-width: 90%;
+                `;
+                toast.innerHTML =
+                    `<i class="fas ${icon}"></i><span>${msg}</span><button class="close" style="background:none;border:none;color:var(--text-muted);cursor:pointer;padding:0 0 0 0.3rem;font-size:0.65rem;transition:color var(--transition);pointer-events:auto;">&times;</button>`;
+                document.body.appendChild(toast);
+                requestAnimationFrame(() => toast.classList.add('show'));
+                toast.querySelector('.close').addEventListener('click', () => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                });
+                toastTimeout = setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3500);
+            }
+
+            // ===== NOTIFICATIONS =====
+            document.getElementById('notifBtn').addEventListener('click', function() {
+                showToast('🔔 3 new notifications', 'fa-bell');
+            });
+
+            // ===== SETTINGS NAVIGATION =====
+            const navItems = document.querySelectorAll('.settings-nav .nav-item');
+            const sections = {
+                profile: document.getElementById('section-profile'),
+                workspace: document.getElementById('section-workspace'),
+                connected: document.getElementById('section-connected'),
+                ai: document.getElementById('section-ai'),
+                notifications: document.getElementById('section-notifications'),
+                publishing: document.getElementById('section-publishing'),
+                billing: document.getElementById('section-billing'),
+                security: document.getElementById('section-security'),
+                api: document.getElementById('section-api'),
+                storage: document.getElementById('section-storage'),
+                appearance: document.getElementById('section-appearance'),
+                language: document.getElementById('section-language'),
+                team: document.getElementById('section-team'),
+                privacy: document.getElementById('section-privacy'),
+                about: document.getElementById('section-about')
+            };
+
+            function showSection(sectionId) {
+                Object.values(sections).forEach(el => { if (el) el.style.display = 'none'; });
+                if (sections[sectionId]) sections[sectionId].style.display = 'block';
+                navItems.forEach(item => {
+                    item.classList.toggle('active', item.dataset.section === sectionId);
+                });
+                history.pushState(null, '', '#' + sectionId);
+            }
+
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    showSection(this.dataset.section);
+                });
+            });
+
+            // Handle hash on load
+            const hash = window.location.hash.replace('#', '');
+            if (hash && sections[hash]) {
+                showSection(hash);
+            } else {
+                showSection('profile');
+            }
+
+            // ===== TOGGLES =====
+            document.querySelectorAll('.toggle-switch').forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    const label = this.closest('.toggle-group')?.querySelector('.title')?.textContent ||
+                        'Setting';
+                    const state = this.classList.contains('active') ? 'enabled' : 'disabled';
+                    showToast(`🔘 ${label} ${state}`, 'fa-toggle-on');
+                });
+            });
+
+            // ===== SAVE BUTTONS =====
+            document.querySelectorAll('.save-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const section = this.dataset.section || 'settings';
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                    this.disabled = true;
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        this.disabled = false;
+                        showToast(`✅ ${section.charAt(0).toUpperCase()+section.slice(1)} settings saved!`,
+                            'fa-check-circle');
+                        if (section === 'profile') saveProfile();
+                    }, 1200);
+                });
+            });
+
+            // ===== AVATAR UPLOAD =====
+            const fileInput = document.getElementById('avatarFileInput');
+            const uploadBtn = document.getElementById('uploadAvatarBtn');
+            const removeBtn = document.getElementById('removeAvatarBtn');
+            const avatarLarge = document.getElementById('profileAvatarLarge');
+            const sidebarAvatar = document.getElementById('sidebarAvatar');
+            const headerAvatar = document.getElementById('headerAvatar');
+            const sidebarNameEl = document.getElementById('sidebarName');
+            const headerNameEl = document.getElementById('headerName');
+
+            function getInitials(name) {
+                if (!name) return 'DL';
+                return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'DL';
+            }
+
+            function updateAvatarDisplays(dataURL) {
+                if (dataURL) {
+                    sidebarAvatar.style.backgroundImage = `url(${dataURL})`;
+                    sidebarAvatar.style.backgroundSize = 'cover';
+                    sidebarAvatar.style.backgroundPosition = 'center';
+                    sidebarAvatar.textContent = '';
+                    headerAvatar.style.backgroundImage = `url(${dataURL})`;
+                    headerAvatar.style.backgroundSize = 'cover';
+                    headerAvatar.style.backgroundPosition = 'center';
+                    headerAvatar.textContent = '';
+                    avatarLarge.style.backgroundImage = `url(${dataURL})`;
+                    avatarLarge.style.backgroundSize = 'cover';
+                    avatarLarge.style.backgroundPosition = 'center';
+                    avatarLarge.textContent = '';
+                } else {
+                    const savedName = localStorage.getItem('userName') || 'Damian Lee';
+                    const initials = getInitials(savedName);
+                    sidebarAvatar.style.backgroundImage = '';
+                    sidebarAvatar.textContent = initials;
+                    headerAvatar.style.backgroundImage = '';
+                    headerAvatar.textContent = initials;
+                    avatarLarge.style.backgroundImage = '';
+                    avatarLarge.textContent = initials;
+                }
+            }
+
+            uploadBtn.addEventListener('click', function() {
+                fileInput.click();
+            });
+
+            avatarLarge.querySelector('.overlay').addEventListener('click', function() {
+                fileInput.click();
+            });
+
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const dataURL = event.target.result;
+                        localStorage.setItem('userAvatar', dataURL);
+                        updateAvatarDisplays(dataURL);
+                        showToast('📸 Avatar updated!', 'fa-image');
+                    };
+                    reader.readAsDataURL(file);
+                }
+                this.value = '';
+            });
+
+            removeBtn.addEventListener('click', function() {
+                localStorage.removeItem('userAvatar');
+                updateAvatarDisplays(null);
+                showToast('🗑️ Avatar removed', 'fa-trash-alt');
+            });
+
+            // ===== LOAD SAVED PROFILE =====
+            function loadProfile() {
+                const savedName = localStorage.getItem('userName');
+                const savedAvatar = localStorage.getItem('userAvatar');
+
+                if (savedName) {
+                    profileNameInput.value = savedName;
+                    sidebarNameEl.textContent = savedName;
+                    headerNameEl.textContent = savedName.split(' ')[0] || savedName;
+                }
+                if (savedAvatar) {
+                    updateAvatarDisplays(savedAvatar);
+                } else {
+                    updateAvatarDisplays(null);
+                }
+
+                // Load other fields
+                const fields = [
+                    { key: 'userUsername', el: profileUsernameInput },
+                    { key: 'userEmail', el: profileEmailInput },
+                    { key: 'userJobTitle', el: profileJobTitleInput },
+                    { key: 'userCompany', el: profileCompanyInput },
+                    { key: 'userCountry', el: profileCountryInput },
+                    { key: 'userTimezone', el: profileTimezoneInput },
+                    { key: 'userLanguage', el: profileLanguageInput },
+                    { key: 'userBio', el: profileBioInput }
+                ];
+                fields.forEach(field => {
+                    const value = localStorage.getItem(field.key);
+                    if (value && field.el) field.el.value = value;
+                });
+            }
+
+            // ===== PROFILE SAVING =====
+            const profileNameInput = document.getElementById('profileName');
+            const profileUsernameInput = document.getElementById('profileUsername');
+            const profileEmailInput = document.getElementById('profileEmail');
+            const profileJobTitleInput = document.getElementById('profileJobTitle');
+            const profileCompanyInput = document.getElementById('profileCompany');
+            const profileCountryInput = document.getElementById('profileCountry');
+            const profileTimezoneInput = document.getElementById('profileTimezone');
+            const profileLanguageInput = document.getElementById('profileLanguage');
+            const profileBioInput = document.getElementById('profileBio');
+
+            function saveProfile() {
+                const name = profileNameInput.value.trim();
+                const username = profileUsernameInput.value.trim();
+                const email = profileEmailInput.value.trim();
+                const jobTitle = profileJobTitleInput.value.trim();
+                const company = profileCompanyInput.value.trim();
+                const country = profileCountryInput.value;
+                const timezone = profileTimezoneInput.value;
+                const language = profileLanguageInput.value;
+                const bio = profileBioInput.value.trim();
+
+                localStorage.setItem('userName', name || 'Damian Lee');
+                localStorage.setItem('userUsername', username || 'damianlee');
+                localStorage.setItem('userEmail', email || 'damian@soloai.com');
+                localStorage.setItem('userJobTitle', jobTitle);
+                localStorage.setItem('userCompany', company);
+                localStorage.setItem('userCountry', country);
+                localStorage.setItem('userTimezone', timezone);
+                localStorage.setItem('userLanguage', language);
+                localStorage.setItem('userBio', bio);
+
+                sidebarNameEl.textContent = name || 'Damian Lee';
+                headerNameEl.textContent = (name || 'Damian Lee').split(' ')[0];
+                // Update team member info
+                document.getElementById('teamOwnerName').textContent = name || 'Damian Lee';
+                document.getElementById('teamOwnerEmail').textContent = email || 'damian@soloai.com';
+                // If no avatar, update initials
+                if (!localStorage.getItem('userAvatar')) {
+                    updateAvatarDisplays(null);
+                }
+            }
+
+            // ===== CONNECT BUTTONS =====
+            document.querySelectorAll('.connect-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const platform = this.dataset.platform;
+                    // Redirect to connect-accounts.html
+                    window.location.href = 'connect-accounts.html?platform=' + encodeURIComponent(platform);
+                });
+            });
+
+            // ===== API KEY =====
+            const apiKeyInput = document.getElementById('apiKeyInput');
+            const copyBtn = document.getElementById('copyApiKeyBtn');
+            const regenBtn = document.getElementById('regenerateApiKeyBtn');
+
+            function generateApiKey() {
+                const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                let result = 'sa_live_';
+                for (let i = 0; i < 32; i++) {
+                    result += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                return result;
+            }
+
+            regenBtn.addEventListener('click', function() {
+                const newKey = generateApiKey();
+                apiKeyInput.value = newKey;
+                showToast('🔄 API key regenerated!', 'fa-key');
+            });
+
+            copyBtn.addEventListener('click', function() {
+                apiKeyInput.select();
+                document.execCommand('copy');
+                showToast('📋 API key copied to clipboard!', 'fa-copy');
+            });
+
+            // ===== SIGN OUT MODAL =====
+            const signOutModal = document.getElementById('signOutModal');
+            const confirmSignOut = document.getElementById('confirmSignOut');
+            const cancelSignOut = document.getElementById('cancelSignOut');
+            const signOutButtons = document.querySelectorAll('.sign-out-btn');
+
+            signOutButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    signOutModal.classList.add('show');
+                });
+            });
+
+            cancelSignOut.addEventListener('click', function() {
+                signOutModal.classList.remove('show');
+            });
+
+            confirmSignOut.addEventListener('click', function() {
+                // Clear session data? For demo, just redirect
+                window.location.href = 'sign-in.html';
+            });
+
+            // ===== INVITE MEMBER =====
+            const inviteBtn = document.getElementById('inviteMemberBtn');
+            inviteBtn.addEventListener('click', function() {
+                const email = prompt('Enter email address to invite:');
+                if (email) {
+                    showToast(`📧 Invitation sent to ${email}`, 'fa-envelope');
+                }
+            });
+
+            // ===== SEARCH =====
+            const globalSearch = document.getElementById('globalSearch');
+            globalSearch.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && this.value.trim()) {
+                    const query = this.value.toLowerCase().trim();
+                    let found = false;
+                    navItems.forEach(item => {
+                        const title = item.querySelector('.title')?.textContent?.toLowerCase() || '';
+                        const desc = item.querySelector('.desc')?.textContent?.toLowerCase() || '';
+                        if (title.includes(query) || desc.includes(query)) {
+                            const section = item.dataset.section;
+                            showSection(section);
+                            found = true;
+                            showToast(`🔍 Found: ${item.querySelector('.title')?.textContent}`, 'fa-search');
+                        }
+                    });
+                    if (!found) {
+                        showToast('🔍 No settings found matching your search', 'fa-search');
+                    }
+                }
+            });
+
+            // ===== KEYBOARD SHORTCUTS =====
+            document.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    globalSearch.focus();
+                }
+                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                    e.preventDefault();
+                    const activeSection = document.querySelector('.settings-nav .nav-item.active');
+                    if (activeSection) {
+                        const section = activeSection.dataset.section;
+                        const btn = document.querySelector(`.save-btn[data-section="${section}"]`);
+                        if (btn) btn.click();
+                    }
+                }
+            });
+
+            // Initial load
+            loadProfile();
+
+        });
+    </script>
+
+</body>
+</html>
