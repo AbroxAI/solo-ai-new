@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Solo AI – AI Studio</title>
+    <link rel="icon" type="image/x-icon" href="assets/images/logo/favicon.ico" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        /* ===== CSS Variables ===== */
+        :root {
+            --bg-page: #F8FAFC;
+            --bg-sidebar: #FFFFFF;
+            --bg-card: #FFFFFF;
+            --bg-input: #FFFFFF;
+            --bg-hover: #F8FAFC;
+            --bg-active: #EFF6FF;
+
+            --text-primary: #0F172A;
+            --text-secondary: #475569;
+            --text-muted: #94A3B8;
+
+            --border-color: #E5E7EB;
+            --border-divider: #E2E8F0;
+
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.08);
+
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+
+            --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .dark {
+            --bg-page: #0F172A;
+            --bg-sidebar: #1E293B;
+            --bg-card: #1E293B;
+            --bg-input: #1E293B;
+            --bg-hover: #0F172A;
+            --bg-active: #1E3A5F;
+
+            --text-primary: #F1F5F9;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+
+            --border-color: #334155;
+            --border-divider: #334155;
+
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        /* ===== Base ===== */
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            box-sizing: border-box;
+        }
+        body {
+            background: var(--bg-page);
+            margin: 0;
+            padding: 0;
+            transition: background 0.3s ease, color 0.3s ease;
+            color: var(--text-primary);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-page);
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        /* ===== Sidebar ===== */
+        .sidebar {
+            width: 250px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 40;
+            transition: transform 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+        }
+        .sidebar-brand {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border-divider);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-shrink: 0;
+        }
+        .sidebar-brand .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: #4F46E5;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+        .sidebar-brand span {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.3px;
+        }
+        .sidebar-user {
+            padding: 0.75rem 1.5rem;
+            border-bottom: 1px solid var(--border-divider);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-shrink: 0;
+        }
+        .sidebar-user .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-active);
+            color: #2563EB;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+        }
+        .sidebar-user .info .name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .sidebar-user .info .plan {
+            font-size: 0.6rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .sidebar-user .info .plan .dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #94A3B8; /* Free plan */
+            display: inline-block;
+        }
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.75rem 0.75rem;
+        }
+        .sidebar-nav .section-label {
+            font-size: 0.55rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0.5rem 0.9rem 0.2rem;
+        }
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0.9rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all var(--transition);
+            text-decoration: none;
+            cursor: pointer;
+            position: relative;
+        }
+        .nav-link:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        .nav-link i {
+            width: 1.1rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .nav-link.active {
+            background: var(--bg-active);
+            color: #2563EB;
+            font-weight: 600;
+        }
+        .nav-link.active i {
+            color: #2563EB;
+        }
+        .nav-link.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 20px;
+            background: #2563EB;
+            border-radius: 0 3px 3px 0;
+        }
+        .nav-link .badge {
+            margin-left: auto;
+            background: var(--border-color);
+            color: var(--text-secondary);
+            font-size: 0.55rem;
+            font-weight: 600;
+            padding: 0.05rem 0.45rem;
+            border-radius: 40px;
+        }
+        .nav-link.active .badge {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+        .dark .nav-link.active .badge {
+            background: #1E3A5F;
+            color: #60A5FA;
+        }
+
+        .sidebar-bottom {
+            padding: 0.75rem 1.25rem;
+            border-top: 1px solid var(--border-divider);
+            flex-shrink: 0;
+        }
+        .membership-card {
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 0.6rem 0.8rem;
+        }
+        .membership-card .label {
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .membership-card .value {
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: #2563EB;
+        }
+        .btn-upgrade {
+            width: 100%;
+            background: #2563EB;
+            color: #FFFFFF;
+            font-weight: 600;
+            font-size: 0.65rem;
+            padding: 0.35rem 0;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: background 0.15s ease, transform 0.15s ease;
+            margin-top: 0.4rem;
+        }
+        .btn-upgrade:hover {
+            background: #1D4ED8;
+            transform: scale(1.02);
+        }
+
+        /* ===== Main Content ===== */
+        .main-content {
+            margin-left: 250px;
+            padding: 0 32px 32px 32px;
+            min-height: 100vh;
+            background: var(--bg-page);
+            transition: margin-left 0.3s ease, background 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ===== Top Header ===== */
+        .top-header {
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 0 0.5rem 0;
+            margin-bottom: 0;
+            background: var(--bg-page);
+            flex-shrink: 0;
+            padding-left: 0.5rem;
+        }
+        .top-header .left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .top-header .left .hamburger {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: none;
+            transition: color 0.3s ease;
+        }
+        .top-header .left .hamburger:hover {
+            color: var(--text-primary);
+        }
+        .top-header .left .breadcrumb {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .top-header .left .breadcrumb span {
+            color: var(--text-secondary);
+        }
+        .top-header .left .page-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.3px;
+        }
+        .top-header .left .page-title .sub {
+            font-size: 0.65rem;
+            font-weight: 400;
+            color: var(--text-muted);
+            margin-left: 0.4rem;
+        }
+        .top-header .right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .top-header .right .search-wrap {
+            position: relative;
+        }
+        .top-header .right .search-wrap input {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 40px;
+            padding: 0.3rem 0.8rem 0.3rem 2rem;
+            font-size: 0.7rem;
+            color: var(--text-primary);
+            width: 160px;
+            transition: all var(--transition);
+            outline: none;
+        }
+        .top-header .right .search-wrap input:focus {
+            border-color: #2563EB;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+        }
+        .top-header .right .search-wrap i {
+            position: absolute;
+            left: 0.6rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.7rem;
+        }
+        .top-header .right .icon-btn {
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: color var(--transition), transform 0.15s ease;
+            font-size: 1rem;
+            position: relative;
+        }
+        .top-header .right .icon-btn:hover {
+            color: var(--text-primary);
+            transform: scale(1.05);
+        }
+        .top-header .right .icon-btn .dot {
+            position: absolute;
+            top: -2px;
+            right: -3px;
+            width: 7px;
+            height: 7px;
+            background: #EF4444;
+            border-radius: 50%;
+            border: 2px solid var(--bg-page);
+        }
+        .top-header .right .avatar-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .top-header .right .avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--bg-active);
+            color: #2563EB;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.65rem;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .top-header .right .avatar:hover {
+            border-color: #2563EB;
+        }
+        .top-header .right .avatar-wrap .name {
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        /* ===== AI Studio Layout ===== */
+        .ai-layout {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            gap: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .ai-main {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+            padding-bottom: 1rem;
+        }
+        .ai-main::-webkit-scrollbar {
+            width: 4px;
+        }
+        .ai-main::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .ai-main::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        /* ===== Cards ===== */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.25rem;
+            transition: background 0.3s ease, border-color 0.3s ease, box-shadow var(--transition);
+        }
+        .card:hover {
+            box-shadow: var(--shadow-sm);
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .card-header h3 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* ===== Platform Pills ===== */
+        .platform-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.4rem 0.9rem;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: var(--bg-hover);
+            border: 1.5px solid transparent;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        .platform-pill:hover {
+            background: var(--bg-hover);
+        }
+        .platform-pill.active {
+            background: var(--bg-active);
+            border-color: #2563EB;
+            color: #2563EB;
+        }
+        .platform-pill i {
+            font-size: 0.8rem;
+        }
+
+        /* ===== Form Elements ===== */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.45rem 0.7rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            background: var(--bg-input);
+            color: var(--text-primary);
+            font-size: 0.78rem;
+            transition: border-color var(--transition), background 0.3s ease, color 0.3s ease;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+        }
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #2563EB;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* ===== Toggle Switch ===== */
+        .toggle-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+        .toggle-track {
+            width: 34px;
+            height: 20px;
+            border-radius: 40px;
+            background: var(--border-color);
+            position: relative;
+            transition: background 0.2s ease;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        .toggle-track.active {
+            background: #2563EB;
+        }
+        .toggle-track .toggle-thumb {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: white;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            transition: transform 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+        }
+        .toggle-track.active .toggle-thumb {
+            transform: translateX(14px);
+        }
+
+        /* ===== Buttons ===== */
+        .btn-primary {
+            background: #2563EB;
+            color: #FFFFFF;
+            font-weight: 600;
+            font-size: 0.875rem;
+            padding: 0.6rem 1.8rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: background 0.15s ease, transform 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+        .btn-primary:hover {
+            background: #1D4ED8;
+            transform: scale(1.02);
+        }
+        .btn-primary:disabled {
+            opacity: 0.6;
+            pointer-events: none;
+            transform: none;
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.75rem;
+            padding: 0.3rem 1rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .btn-outline:hover {
+            background: var(--bg-hover);
+            border-color: #94A3B8;
+        }
+
+        /* ===== Right Panel ===== */
+        .right-panel {
+            width: 280px;
+            flex-shrink: 0;
+            padding-left: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            overflow-y: auto;
+            padding-bottom: 1rem;
+        }
+        .right-panel::-webkit-scrollbar {
+            width: 3px;
+        }
+        .right-panel::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .right-panel::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        .panel-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 0.9rem 1.1rem;
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .panel-card .card-title {
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* ===== Tool Cards ===== */
+        .tool-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 0.7rem 0.9rem;
+            transition: all var(--transition);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .tool-card:hover {
+            border-color: #2563EB;
+            box-shadow: var(--shadow-sm);
+        }
+        .tool-card .tool-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-active);
+            color: #2563EB;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            flex-shrink: 0;
+        }
+
+        /* ===== Script Content ===== */
+        .script-content {
+            font-size: 0.875rem;
+            line-height: 1.7;
+            color: var(--text-primary);
+        }
+        .script-content h4 {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-top: 1rem;
+            margin-bottom: 0.3rem;
+            color: var(--text-primary);
+        }
+        .script-content h4:first-child {
+            margin-top: 0;
+        }
+        .script-content .hook {
+            background: var(--bg-hover);
+            padding: 0.5rem 0.8rem;
+            border-radius: var(--radius-sm);
+            border-left: 3px solid #2563EB;
+            margin: 0.5rem 0;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        .script-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 0.3rem 0 0.8rem 0;
+        }
+        .script-content ul li {
+            padding: 0.2rem 0 0.2rem 1.2rem;
+            position: relative;
+        }
+        .script-content ul li::before {
+            content: "•";
+            color: #2563EB;
+            font-weight: 700;
+            position: absolute;
+            left: 0;
+        }
+
+        /* ===== Suggestion Pills ===== */
+        .suggestion-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.2rem 0.7rem;
+            border-radius: 40px;
+            font-size: 0.6rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all var(--transition);
+            white-space: nowrap;
+        }
+        .suggestion-pill:hover {
+            background: var(--bg-active);
+            border-color: #2563EB;
+            color: #2563EB;
+        }
+
+        /* ===== Score Ring ===== */
+        .score-ring {
+            transform: rotate(-90deg);
+        }
+        .score-ring-bg {
+            stroke: var(--border-color);
+        }
+        .score-ring-fg {
+            stroke: #2563EB;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.8s ease;
+        }
+        .mini-progress {
+            height: 4px;
+            border-radius: 4px;
+            background: var(--border-color);
+            overflow: hidden;
+        }
+        .mini-progress .fill {
+            height: 100%;
+            border-radius: 4px;
+            background: #2563EB;
+        }
+        .mini-progress .fill.green {
+            background: #16A34A;
+        }
+        .mini-progress .fill.amber {
+            background: #F59E0B;
+        }
+        .mini-progress .fill.indigo {
+            background: #4F46E5;
+        }
+
+        /* ===== Toast ===== */
+        .toast-notification {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            z-index: 200;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            pointer-events: none;
+            max-width: 90%;
+        }
+        .toast-notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .toast-notification i {
+            color: #16A34A;
+            font-size: 0.9rem;
+        }
+        .toast-notification .close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0 0 0 0.4rem;
+            font-size: 0.7rem;
+            transition: color var(--transition);
+            pointer-events: auto;
+        }
+        .toast-notification .close:hover {
+            color: var(--text-primary);
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 1200px) {
+            .right-panel {
+                display: none;
+            }
+        }
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.3);
+                z-index: 39;
+            }
+            .sidebar-overlay.active {
+                display: block;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 0 0.75rem 0.75rem 0.75rem;
+            }
+            .top-header .left .hamburger {
+                display: block;
+            }
+            .top-header .left .breadcrumb {
+                display: none;
+            }
+            .top-header .left .page-title .sub {
+                display: none;
+            }
+            .top-header .right .search-wrap {
+                display: none;
+            }
+            .top-header .right .avatar-wrap .name {
+                display: none;
+            }
+            .ai-layout {
+                flex-direction: column;
+                overflow-y: auto;
+            }
+            .ai-main {
+                overflow-y: visible;
+                padding-right: 0;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 640px) {
+            .top-header .left .page-title {
+                font-size: 0.9rem;
+            }
+            .top-header .left .page-title .sub {
+                display: none;
+            }
+            .top-header .right {
+                gap: 0.5rem;
+            }
+            .top-header .right .icon-btn {
+                font-size: 0.85rem;
+            }
+            .top-header .right .avatar {
+                width: 26px;
+                height: 26px;
+                font-size: 0.55rem;
+            }
+            .card {
+                padding: 0.75rem;
+            }
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.3rem;
+            }
+            .platform-pill {
+                font-size: 0.65rem;
+                padding: 0.25rem 0.6rem;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .script-content {
+                font-size: 0.75rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .top-header {
+                height: 56px;
+                padding-left: 0.25rem;
+            }
+            .top-header .right {
+                gap: 0.4rem;
+            }
+            .top-header .right .icon-btn {
+                font-size: 0.75rem;
+            }
+            .top-header .right .avatar {
+                width: 24px;
+                height: 24px;
+                font-size: 0.5rem;
+            }
+            .platform-pill {
+                font-size: 0.55rem;
+                padding: 0.2rem 0.4rem;
+            }
+            .btn-primary {
+                font-size: 0.75rem;
+                padding: 0.4rem 1rem;
+            }
+            .btn-outline {
+                font-size: 0.65rem;
+                padding: 0.2rem 0.6rem;
+            }
+        }
+
+        /* ===== Dark Mode ===== */
+        .dark .tool-card {
+            background: #1E293B;
+            border-color: #334155;
+        }
+        .dark .tool-card:hover {
+            border-color: #60A5FA;
+        }
+        .dark .tool-card .tool-icon {
+            background: #1E3A5F;
+            color: #60A5FA;
+        }
+        .dark .suggestion-pill {
+            background: #0F172A;
+            border-color: #334155;
+            color: #94A3B8;
+        }
+        .dark .suggestion-pill:hover {
+            background: #1E3A5F;
+            border-color: #60A5FA;
+            color: #60A5FA;
+        }
+        .dark .script-content .hook {
+            background: #0F172A;
+            color: #94A3B8;
+        }
+        .dark .script-content ul li::before {
+            color: #60A5FA;
+        }
+        .dark .script-content h4 {
+            color: #F1F5F9;
+        }
+        .dark .platform-pill {
+            background: #0F172A;
+            color: #94A3B8;
+        }
+        .dark .platform-pill.active {
+            background: #1E3A5F;
+            border-color: #60A5FA;
+            color: #60A5FA;
+        }
+        .dark .platform-pill:hover {
+            background: #1E293B;
+        }
+        .dark .toggle-wrap {
+            color: #94A3B8;
+        }
+        .dark .toggle-track {
+            background: #334155;
+        }
+        .dark .toggle-track.active {
+            background: #2563EB;
+        }
+        .dark .mini-progress {
+            background: #334155;
+        }
+        .dark .score-ring-bg {
+            stroke: #334155;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- ============================================================ -->
+    <!-- SIDEBAR                                                       -->
+    <!-- ============================================================ -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="logo-icon">SA</div>
+            <span>Solo AI</span>
+        </div>
+        <div class="sidebar-user">
+            <div class="avatar">DL</div>
+            <div class="info">
+                <div class="name">Damian Lee</div>
+                <div class="plan"><span class="dot"></span> Free Plan</div>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="section-label">Main</div>
+            <a class="nav-link" href="dashboard.html"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a class="nav-link active" href="ai-studio.html"><i class="fas fa-sparkles"></i> AI Studio</a>
+            <a class="nav-link" href="content.html"><i class="fas fa-folder"></i> Content</a>
+            <a class="nav-link" href="publishing.html"><i class="fas fa-calendar-alt"></i> Publishing</a>
+            <a class="nav-link" href="analytics.html"><i class="fas fa-chart-line"></i> Analytics</a>
+            <a class="nav-link" href="community.html"><i class="fas fa-users"></i> Community <span class="badge">24</span></a>
+            <a class="nav-link" href="courses.html"><i class="fas fa-graduation-cap"></i> Courses</a>
+            <a class="nav-link" href="marketplace.html"><i class="fas fa-store"></i> Marketplace <span class="badge">12</span></a>
+            <a class="nav-link" href="support.html"><i class="fas fa-headset"></i> Support <span class="badge">4</span></a>
+            <a class="nav-link" href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+        </nav>
+        <div class="sidebar-bottom">
+            <div class="membership-card">
+                <div class="flex items-center justify-between">
+                    <span class="label">Membership</span>
+                    <span class="value">Free</span>
+                </div>
+                <button class="btn-upgrade" onclick="window.location.href='marketplace.html'">⬆ View Plans</button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ============================================================ -->
+    <!-- MAIN CONTENT                                                  -->
+    <!-- ============================================================ -->
+    <div class="main-content" id="mainContent">
+
+        <!-- TOP HEADER -->
+        <header class="top-header">
+            <div class="left">
+                <div class="hamburger" id="menuToggle"><i class="fas fa-bars"></i></div>
+                <div class="breadcrumb">Dashboard / <span>AI Studio</span></div>
+                <div class="page-title">
+                    AI Studio
+                    <span class="sub">Create, optimize, and scale content for every platform with AI.</span>
+                </div>
+            </div>
+            <div class="right">
+                <div class="search-wrap">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search..." id="globalSearch" />
+                </div>
+                <div class="icon-btn" id="notifBtn">
+                    <i class="fas fa-bell"></i>
+                    <span class="dot"></span>
+                </div>
+                <div class="icon-btn" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </div>
+                <div class="avatar-wrap">
+                    <div class="avatar">DL</div>
+                    <span class="name">Damian</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- ============================================================ -->
+        <!-- AI STUDIO LAYOUT                                             -->
+        <!-- ============================================================ -->
+        <div class="ai-layout">
+
+            <!-- MAIN CONTENT -->
+            <div class="ai-main">
+
+                <!-- Create Content Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-pen-fancy" style="color:#2563EB;margin-right:0.4rem;"></i> Create New Content</h3>
+                    </div>
+
+                    <!-- Platform Pills -->
+                    <div class="form-group">
+                        <label>Platform</label>
+                        <div style="display:flex;flex-wrap:wrap;gap:0.4rem;">
+                            <span class="platform-pill active"><i class="fab fa-youtube"></i> YouTube</span>
+                            <span class="platform-pill"><i class="fab fa-instagram"></i> Instagram</span>
+                            <span class="platform-pill"><i class="fab fa-facebook-f"></i> Facebook</span>
+                            <span class="platform-pill"><i class="fab fa-tiktok"></i> TikTok</span>
+                            <span class="platform-pill"><i class="fab fa-x-twitter"></i> X</span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Content Type</label>
+                            <select>
+                                <option selected>Video Script</option>
+                                <option>Caption</option>
+                                <option>Hashtag Set</option>
+                                <option>Description</option>
+                                <option>Short Hook</option>
+                                <option>Thread</option>
+                                <option>Blog Intro</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Goal</label>
+                            <select>
+                                <option selected>Engagement</option>
+                                <option>Reach</option>
+                                <option>Subscribers</option>
+                                <option>Sales</option>
+                                <option>Awareness</option>
+                                <option>Retention</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Tone of Voice</label>
+                            <select>
+                                <option selected>Professional</option>
+                                <option>Casual</option>
+                                <option>Friendly</option>
+                                <option>Persuasive</option>
+                                <option>Energetic</option>
+                                <option>Premium</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Language</label>
+                            <select>
+                                <option selected>English (US)</option>
+                                <option>English (UK)</option>
+                                <option>Spanish</option>
+                                <option>French</option>
+                                <option>German</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Audience</label>
+                            <select>
+                                <option selected>Content Creators</option>
+                                <option>Marketers</option>
+                                <option>Small Business Owners</option>
+                                <option>Educators</option>
+                                <option>Entrepreneurs</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Topic / Prompt</label>
+                            <textarea rows="2" placeholder="Enter your topic or prompt...">5 ways to grow a YouTube channel in 2024</textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Additional Instructions</label>
+                        <textarea rows="2" placeholder="Add more details to get better results..."></textarea>
+                    </div>
+
+                    <!-- Toggle Controls -->
+                    <div style="display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:1rem;">
+                        <div class="toggle-wrap">
+                            <div class="toggle-track active"><div class="toggle-thumb"></div></div>
+                            <span>Brand Voice</span>
+                        </div>
+                        <div class="toggle-wrap">
+                            <div class="toggle-track active"><div class="toggle-thumb"></div></div>
+                            <span>Include CTA</span>
+                        </div>
+                        <div class="toggle-wrap">
+                            <div class="toggle-track"><div class="toggle-thumb"></div></div>
+                            <span>Advanced Options</span>
+                        </div>
+                    </div>
+
+                    <!-- Generate Button -->
+                    <button class="btn-primary" id="generateBtn" style="width:100%;">
+                        <i class="fas fa-play"></i>
+                        <span id="generateText">Generate Content</span>
+                        <span id="generateSpinner" style="display:none;"><i class="fas fa-spinner fa-spin"></i></span>
+                    </button>
+                </div>
+
+                <!-- Popular Tools -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-th-large" style="color:#2563EB;margin-right:0.4rem;"></i> Popular Tools</h3>
+                        <span style="font-size:0.65rem;font-weight:500;color:#2563EB;cursor:pointer;">View All Tools</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:0.5rem;">
+                        <div class="tool-card">
+                            <div class="tool-icon"><i class="fas fa-video"></i></div>
+                            <div><div style="font-size:0.7rem;font-weight:600;color:var(--text-primary);">Video Script</div><div style="font-size:0.55rem;color:var(--text-muted);">Full scripts</div></div>
+                        </div>
+                        <div class="tool-card">
+                            <div class="tool-icon"><i class="fas fa-captioning"></i></div>
+                            <div><div style="font-size:0.7rem;font-weight:600;color:var(--text-primary);">Captions</div><div style="font-size:0.55rem;color:var(--text-muted);">Engaging captions</div></div>
+                        </div>
+                        <div class="tool-card">
+                            <div class="tool-icon"><i class="fas fa-hashtag"></i></div>
+                            <div><div style="font-size:0.7rem;font-weight:600;color:var(--text-primary);">Hashtags</div><div style="font-size:0.55rem;color:var(--text-muted);">Trending sets</div></div>
+                        </div>
+                        <div class="tool-card">
+                            <div class="tool-icon"><i class="fas fa-lightbulb"></i></div>
+                            <div><div style="font-size:0.7rem;font-weight:600;color:var(--text-primary);">Title Ideas</div><div style="font-size:0.55rem;color:var(--text-muted);">Clickable titles</div></div>
+                        </div>
+                        <div class="tool-card">
+                            <div class="tool-icon"><i class="fas fa-align-left"></i></div>
+                            <div><div style="font-size:0.7rem;font-weight:600;color:var(--text-primary);">Description</div><div style="font-size:0.55rem;color:var(--text-muted);">Video descriptions</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Generated Result -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-file-alt" style="color:#2563EB;margin-right:0.4rem;"></i> Generated Result</h3>
+                        <button class="btn-outline" style="font-size:0.6rem;padding:0.15rem 0.6rem;"><i class="fas fa-bookmark"></i> Save to Content</button>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div style="display:flex;gap:0.2rem;border-bottom:1px solid var(--border-color);padding-bottom:0.3rem;margin-bottom:0.75rem;flex-wrap:wrap;">
+                        <button class="tab-btn active" style="padding:0.2rem 0.8rem;font-size:0.7rem;font-weight:500;border:none;background:transparent;border-radius:var(--radius-sm);cursor:pointer;color:var(--text-muted);transition:all var(--transition);">Output</button>
+                        <button class="tab-btn" style="padding:0.2rem 0.8rem;font-size:0.7rem;font-weight:500;border:none;background:transparent;border-radius:var(--radius-sm);cursor:pointer;color:var(--text-muted);transition:all var(--transition);">Outline</button>
+                        <button class="tab-btn" style="padding:0.2rem 0.8rem;font-size:0.7rem;font-weight:500;border:none;background:transparent;border-radius:var(--radius-sm);cursor:pointer;color:var(--text-muted);transition:all var(--transition);">Talking Points</button>
+                        <button class="tab-btn" style="padding:0.2rem 0.8rem;font-size:0.7rem;font-weight:500;border:none;background:transparent;border-radius:var(--radius-sm);cursor:pointer;color:var(--text-muted);transition:all var(--transition);">SEO Analysis</button>
+                    </div>
+
+                    <!-- Script Content -->
+                    <div class="script-content" id="resultContent" style="max-height:280px;overflow-y:auto;padding-right:0.25rem;">
+                        <h4>Title: 5 Ways to Grow Your YouTube Channel in 2024</h4>
+                        <div class="hook"><span style="font-weight:600;color:var(--text-primary);">Hook (0:00 – 0:15):</span> "Want to grow your YouTube channel this year? Here are 5 proven strategies that actually work in 2024."</div>
+                        <h4>1. Create Content That Solves Problems</h4>
+                        <ul><li>Identify your audience's pain points</li><li>Provide actionable solutions</li><li>Use real examples and case studies</li></ul>
+                        <h4>2. Optimize for Search and SEO</h4>
+                        <ul><li>Use keyword-rich titles and descriptions</li><li>Add timestamps and chapters</li><li>Leverage tags and categories effectively</li></ul>
+                        <h4>3. Be Consistent and Build Momentum</h4>
+                        <ul><li>Set a realistic posting schedule</li><li>Batch-create content to stay ahead</li><li>Engage with your community regularly</li></ul>
+                        <h4>4. Use Strong Thumbnails and Titles</h4>
+                        <ul><li>Create contrast and curiosity</li><li>Use emotional triggers sparingly</li><li>A/B test different variations</li></ul>
+                        <h4>5. Analyze and Improve Weekly</h4>
+                        <ul><li>Review your analytics dashboard</li><li>Identify top-performing videos</li><li>Iterate based on what works</li></ul>
+                        <div style="margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border-color);">
+                            <span style="font-weight:600;color:var(--text-primary);">Call to Action:</span> "If you found this helpful, hit that subscribe button and let me know which strategy you're going to try first in the comments!"
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border-color);">
+                        <button class="btn-outline" style="font-size:0.65rem;padding:0.15rem 0.6rem;"><i class="fas fa-copy"></i> Copy</button>
+                        <button class="btn-outline" style="font-size:0.65rem;padding:0.15rem 0.6rem;"><i class="fas fa-rotate-right"></i> Regenerate</button>
+                        <button class="btn-outline" style="font-size:0.65rem;padding:0.15rem 0.6rem;"><i class="fas fa-pen"></i> Edit in Editor</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- RIGHT PANEL                                                  -->
+            <!-- ============================================================ -->
+            <div class="right-panel">
+
+                <!-- AI Assistant -->
+                <div class="panel-card">
+                    <div class="card-title">AI Assistant <span style="font-size:0.5rem;font-weight:700;padding:0.05rem 0.4rem;border-radius:40px;background:#DBEAFE;color:#1E40AF;text-transform:uppercase;letter-spacing:0.3px;">Beta</span></div>
+                    <p style="font-size:0.6rem;color:var(--text-muted);margin-bottom:0.5rem;">Quick suggestions to refine your content.</p>
+                    <div style="display:flex;flex-wrap:wrap;gap:0.25rem;">
+                        <span class="suggestion-pill"><i class="fas fa-sparkles"></i> More engaging</span>
+                        <span class="suggestion-pill"><i class="fas fa-scissors"></i> Shorten script</span>
+                        <span class="suggestion-pill"><i class="fas fa-list"></i> More hooks</span>
+                        <span class="suggestion-pill"><i class="fas fa-comment"></i> Make casual</span>
+                        <span class="suggestion-pill"><i class="fas fa-bullhorn"></i> Add CTA</span>
+                    </div>
+                </div>
+
+                <!-- Content Score -->
+                <div class="panel-card">
+                    <div class="card-title">Content Score</div>
+                    <div style="display:flex;align-items:center;gap:0.75rem;">
+                        <div style="width:64px;height:64px;position:relative;flex-shrink:0;">
+                            <svg viewBox="0 0 60 60" class="score-ring" style="width:100%;height:100%;">
+                                <circle cx="30" cy="30" r="26" fill="none" stroke="var(--border-color)" stroke-width="4" />
+                                <circle cx="30" cy="30" r="26" fill="none" stroke="#2563EB" stroke-width="4" stroke-dasharray="163.36" stroke-dashoffset="13.07" class="score-ring-fg" />
+                            </svg>
+                            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;">
+                                <div style="font-size:1rem;font-weight:700;color:var(--text-primary);line-height:1;">92</div>
+                                <div style="font-size:0.45rem;font-weight:600;color:#16A34A;letter-spacing:0.3px;">Excellent</div>
+                            </div>
+                        </div>
+                        <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:0.2rem;">
+                            <div><div style="display:flex;justify-content:space-between;font-size:0.55rem;color:var(--text-secondary);"><span>Engagement</span><span style="font-weight:600;color:var(--text-primary);">95/100</span></div><div class="mini-progress"><div class="fill" style="width:95%;"></div></div></div>
+                            <div><div style="display:flex;justify-content:space-between;font-size:0.55rem;color:var(--text-secondary);"><span>Structure</span><span style="font-weight:600;color:var(--text-primary);">90/100</span></div><div class="mini-progress"><div class="fill green" style="width:90%;"></div></div></div>
+                            <div><div style="display:flex;justify-content:space-between;font-size:0.55rem;color:var(--text-secondary);"><span>SEO</span><span style="font-weight:600;color:var(--text-primary);">93/100</span></div><div class="mini-progress"><div class="fill amber" style="width:93%;"></div></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Membership CTA (replaces AI Credits) -->
+                <div class="panel-card">
+                    <div class="card-title">Unlock Full Features</div>
+                    <p style="font-size:0.6rem;color:var(--text-muted);margin-bottom:0.5rem;">
+                        Upgrade to a premium plan to remove limits and access advanced AI tools.
+                    </p>
+                    <button class="btn-upgrade" onclick="window.location.href='marketplace.html'">View Plans</button>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SCRIPTS                                                       -->
+    <!-- ============================================================ -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // ===== THEME =====
+            const themeToggle = document.getElementById('themeToggle');
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+                themeToggle.querySelector('i').className = 'fas fa-sun';
+            }
+            themeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark');
+                const isDark = document.body.classList.contains('dark');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                this.querySelector('i').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+            });
+
+            // ===== SIDEBAR =====
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const menuToggle = document.getElementById('menuToggle');
+
+            menuToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('active');
+            });
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                }
+            });
+
+            // ===== TOAST =====
+            let toastTimeout;
+
+            function showToast(msg, icon = 'fa-check-circle') {
+                const existing = document.querySelector('.toast-notification');
+                if (existing) existing.remove();
+                clearTimeout(toastTimeout);
+                const toast = document.createElement('div');
+                toast.className = 'toast-notification';
+                toast.style.cssText = `
+                    position: fixed;
+                    bottom: 1.5rem;
+                    left: 50%;
+                    transform: translateX(-50%) translateY(20px);
+                    background: var(--bg-card);
+                    border: 1px solid var(--border-color);
+                    color: var(--text-primary);
+                    padding: 0.5rem 1rem;
+                    border-radius: var(--radius-md);
+                    box-shadow: var(--shadow-lg);
+                    font-size: 0.75rem;
+                    font-weight: 500;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.6rem;
+                    z-index: 200;
+                    opacity: 0;
+                    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+                    pointer-events: none;
+                    max-width: 90%;
+                `;
+                toast.innerHTML =
+                    `<i class="fas ${icon}"></i><span>${msg}</span><button class="close" style="background:none;border:none;color:var(--text-muted);cursor:pointer;padding:0 0 0 0.4rem;font-size:0.7rem;transition:color var(--transition);pointer-events:auto;">&times;</button>`;
+                document.body.appendChild(toast);
+                requestAnimationFrame(() => toast.classList.add('show'));
+                toast.querySelector('.close').addEventListener('click', () => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                });
+                toastTimeout = setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3500);
+            }
+
+            // ===== NOTIFICATIONS =====
+            document.getElementById('notifBtn').addEventListener('click', function() {
+                showToast('🔔 3 new notifications', 'fa-bell');
+            });
+
+            // ===== PLATFORM PILLS =====
+            document.querySelectorAll('.platform-pill').forEach(pill => {
+                pill.addEventListener('click', function() {
+                    document.querySelectorAll('.platform-pill').forEach(p => p.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // ===== TOGGLES =====
+            document.querySelectorAll('.toggle-wrap').forEach(wrap => {
+                const track = wrap.querySelector('.toggle-track');
+                wrap.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    track.classList.toggle('active');
+                });
+            });
+
+            // ===== TAB BUTTONS =====
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.tab-btn').forEach(b => {
+                        b.classList.remove('active');
+                        b.style.color = 'var(--text-muted)';
+                        b.style.background = 'transparent';
+                    });
+                    this.classList.add('active');
+                    this.style.color = '#2563EB';
+                    this.style.background = 'var(--bg-active)';
+                    showToast(`📋 Switched to ${this.textContent}`, 'fa-file-alt');
+                });
+            });
+            // Set initial active state
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                if (btn.classList.contains('active')) {
+                    btn.style.color = '#2563EB';
+                    btn.style.background = 'var(--bg-active)';
+                }
+            });
+
+            // ===== GENERATE BUTTON =====
+            const generateBtn = document.getElementById('generateBtn');
+            const generateText = document.getElementById('generateText');
+            const generateSpinner = document.getElementById('generateSpinner');
+            const resultContent = document.getElementById('resultContent');
+
+            const defaultScript = `
+                <h4>Title: 5 Ways to Grow Your YouTube Channel in 2024</h4>
+                <div class="hook"><span style="font-weight:600;color:var(--text-primary);">Hook (0:00 – 0:15):</span> "Want to grow your YouTube channel this year? Here are 5 proven strategies that actually work in 2024."</div>
+                <h4>1. Create Content That Solves Problems</h4>
+                <ul><li>Identify your audience's pain points</li><li>Provide actionable solutions</li><li>Use real examples and case studies</li></ul>
+                <h4>2. Optimize for Search and SEO</h4>
+                <ul><li>Use keyword-rich titles and descriptions</li><li>Add timestamps and chapters</li><li>Leverage tags and categories effectively</li></ul>
+                <h4>3. Be Consistent and Build Momentum</h4>
+                <ul><li>Set a realistic posting schedule</li><li>Batch-create content to stay ahead</li><li>Engage with your community regularly</li></ul>
+                <h4>4. Use Strong Thumbnails and Titles</h4>
+                <ul><li>Create contrast and curiosity</li><li>Use emotional triggers sparingly</li><li>A/B test different variations</li></ul>
+                <h4>5. Analyze and Improve Weekly</h4>
+                <ul><li>Review your analytics dashboard</li><li>Identify top-performing videos</li><li>Iterate based on what works</li></ul>
+                <div style="margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border-color);">
+                    <span style="font-weight:600;color:var(--text-primary);">Call to Action:</span> "If you found this helpful, hit that subscribe button and let me know which strategy you're going to try first in the comments!"
+                </div>
+            `;
+
+            const variations = [
+                defaultScript,
+                defaultScript.replace('5 Ways', '7 Proven Tactics').replace('2024', '2025'),
+                defaultScript.replace('5 Ways', 'The Ultimate Guide').replace('Grow Your YouTube Channel',
+                    'Explode Your Channel Growth'),
+            ];
+
+            generateBtn.addEventListener('click', function() {
+                // Simulate generation
+                generateBtn.disabled = true;
+                generateText.textContent = 'Generating...';
+                generateSpinner.style.display = 'inline';
+
+                setTimeout(() => {
+                    generateBtn.disabled = false;
+                    generateText.textContent = 'Generate Content';
+                    generateSpinner.style.display = 'none';
+
+                    // Update content with variation
+                    const randomIdx = Math.floor(Math.random() * variations.length);
+                    resultContent.innerHTML = variations[randomIdx];
+                    showToast('✨ Content generated successfully!', 'fa-sparkles');
+                }, 2000);
+            });
+
+            // ===== TOOL CARDS =====
+            document.querySelectorAll('.tool-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const label = this.querySelector('.tool-icon + div div:first-child')?.textContent ||
+                        'Tool';
+                    showToast(`🔧 Opening "${label}" tool`, 'fa-tools');
+                });
+            });
+
+            // ===== SUGGESTION PILLS =====
+            document.querySelectorAll('.suggestion-pill').forEach(pill => {
+                pill.addEventListener('click', function() {
+                    const text = this.textContent.trim();
+                    showToast(`💡 Applying suggestion: "${text}"`, 'fa-lightbulb');
+                    // Simulate update
+                    const current = resultContent.innerHTML;
+                    const updated = current +
+                        `<div style="margin-top:0.5rem;padding:0.4rem;background:var(--bg-active);border-radius:var(--radius-sm);border-left:3px solid #2563EB;font-size:0.75rem;color:var(--text-secondary);">✨ Applied: ${text}</div>`;
+                    resultContent.innerHTML = updated;
+                });
+            });
+
+            // ===== SAVE TO CONTENT =====
+            document.querySelector('.btn-outline .fa-bookmark')?.closest('button')?.addEventListener('click', function() {
+                showToast('📁 Content saved to your library!', 'fa-bookmark');
+            });
+
+            // ===== COPY, REGENERATE, EDIT =====
+            document.querySelector('.btn-outline .fa-copy')?.closest('button')?.addEventListener('click', function() {
+                showToast('📋 Script copied to clipboard!', 'fa-copy');
+            });
+            document.querySelector('.btn-outline .fa-rotate-right')?.closest('button')?.addEventListener('click',
+            function() {
+                generateBtn.click();
+            });
+            document.querySelector('.btn-outline .fa-pen')?.closest('button')?.addEventListener('click', function() {
+                showToast('✏️ Opening editor...', 'fa-pen');
+            });
+
+            // ===== SEARCH =====
+            const globalSearch = document.getElementById('globalSearch');
+            globalSearch.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && this.value.trim()) {
+                    showToast(`🔍 Searching: "${this.value}"`, 'fa-search');
+                }
+            });
+
+            // ===== KEYBOARD SHORTCUTS =====
+            document.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    globalSearch.focus();
+                }
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    generateBtn.click();
+                }
+            });
+
+            // ===== VIEW ALL TOOLS =====
+            document.querySelector('.card-header .text-xs.text-\\[\\#2563EB\\]')?.addEventListener('click', function() {
+                showToast('📂 Showing all tools', 'fa-th-large');
+            });
+
+            // ===== SIMULATE REAL-TIME UPDATE =====
+            setTimeout(() => {
+                showToast('🤖 AI Studio ready', 'fa-robot');
+            }, 3000);
+
+        });
+    </script>
+
+</body>
+</html>
