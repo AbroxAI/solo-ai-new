@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Solo AI – Connected Accounts</title>
+    <link rel="icon" type="image/x-icon" href="assets/images/logo/favicon.ico" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        /* ===== CSS Variables ===== */
+        :root {
+            --bg-page: #F8FAFC;
+            --bg-card: #FFFFFF;
+            --bg-input: #FFFFFF;
+            --bg-hover: #F8FAFC;
+            --bg-active: #EFF6FF;
+            --bg-switch-on: #2563EB;
+            --bg-switch-off: #CBD5E1;
+
+            --text-primary: #0F172A;
+            --text-secondary: #475569;
+            --text-muted: #94A3B8;
+
+            --border-color: #E5E7EB;
+            --border-divider: #E2E8F0;
+
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.08);
+
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+
+            --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .dark {
+            --bg-page: #0F172A;
+            --bg-card: #1E293B;
+            --bg-input: #1E293B;
+            --bg-hover: #0F172A;
+            --bg-active: #1E3A5F;
+
+            --text-primary: #F1F5F9;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+
+            --border-color: #334155;
+            --border-divider: #334155;
+
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            box-sizing: border-box;
+        }
+        body {
+            background: var(--bg-page);
+            margin: 0;
+            padding: 0;
+            transition: background 0.3s ease, color 0.3s ease;
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: var(--bg-page); border-radius: 8px; }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 8px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+        /* ===== Top Header ===== */
+        .top-header {
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 32px;
+            background: var(--bg-page);
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            letter-spacing: -0.3px;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: #4F46E5;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+        }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .avatar-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--bg-active);
+            color: #2563EB;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+        }
+        .user-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        /* ===== Main Content ===== */
+        .connect-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 32px 20px 40px 20px;
+        }
+        .page-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+        .page-header p {
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+
+        .platform-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .platform-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            transition: all var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .platform-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-4px);
+            border-color: #CBD5E1;
+        }
+        .platform-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            color: white;
+        }
+        .youtube-bg { background: #FF0000; }
+        .instagram-bg { background: linear-gradient(45deg, #F58529, #DD2A7B, #8134AF); }
+        .facebook-bg { background: #1877F2; }
+        .tiktok-bg { background: #000000; }
+
+        .platform-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+        .platform-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+        .status-dot.connected { background: #16A34A; }
+        .status-dot.disconnected { background: var(--text-muted); }
+        .status-text.connected { color: #16A34A; }
+        .status-text.disconnected { color: var(--text-muted); }
+
+        .btn-connect {
+            width: 100%;
+            padding: 0.6rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            background: #2563EB;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-connect:hover { background: #1D4ED8; }
+        .btn-connect.disconnect {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+        .btn-connect.disconnect:hover { border-color: #EF4444; color: #EF4444; }
+
+        /* ===== Modals ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15,23,42,0.6);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        .modal-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 1.5rem;
+        }
+        .btn-modal {
+            flex: 1;
+            padding: 0.7rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-modal.primary { background: #2563EB; color: white; }
+        .btn-modal.primary:hover { background: #1D4ED8; }
+        .btn-modal.secondary { background: var(--bg-hover); color: var(--text-secondary); border: 1px solid var(--border-color); }
+        .btn-modal.secondary:hover { background: var(--bg-active); }
+
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; font-size: 0.8rem; font-weight: 500; margin-bottom: 0.3rem; }
+        .form-group input {
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            background: var(--bg-input);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            outline: none;
+        }
+        .form-group input:focus { border-color: #2563EB; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+
+        .toast-notification {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #0F172A;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 14px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            z-index: 3000;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            pointer-events: none;
+        }
+        .toast-notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        @media (max-width: 640px) {
+            .top-header { padding: 0 16px; }
+            .user-name { display: none; }
+            .connect-container { padding: 24px 16px; }
+            .page-header h1 { font-size: 1.5rem; }
+            .platform-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Header (No Sidebar) -->
+    <header class="top-header">
+        <a href="dashboard.html" class="logo-area">
+            <div class="logo-icon">SA</div>
+            Solo AI
+        </a>
+        <div class="user-profile">
+            <div class="avatar-circle" id="headerAvatar">DL</div>
+            <span class="user-name" id="headerName">Damian</span>
+            <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Connect Accounts Content -->
+    <div class="connect-container">
+        <div class="page-header">
+            <h1>Connect Your Social Accounts</h1>
+            <p>Choose a platform to connect. You'll need an active premium plan to proceed.</p>
+        </div>
+
+        <div class="platform-grid" id="platformGrid">
+            <!-- YouTube -->
+            <div class="platform-card" data-platform="youtube">
+                <div class="platform-icon youtube-bg"><i class="fab fa-youtube"></i></div>
+                <div class="platform-name">YouTube</div>
+                <div class="platform-desc">Connect your channel using an API key</div>
+                <div class="connection-status">
+                    <span class="status-dot disconnected" id="status-youtube"></span>
+                    <span class="status-text disconnected" id="statusText-youtube">Not Connected</span>
+                </div>
+                <button class="btn-connect" id="btn-youtube">Connect</button>
+            </div>
+
+            <!-- Instagram -->
+            <div class="platform-card" data-platform="instagram">
+                <div class="platform-icon instagram-bg"><i class="fab fa-instagram"></i></div>
+                <div class="platform-name">Instagram</div>
+                <div class="platform-desc">Connect via OAuth (coming soon)</div>
+                <div class="connection-status">
+                    <span class="status-dot disconnected" id="status-instagram"></span>
+                    <span class="status-text disconnected" id="statusText-instagram">Not Connected</span>
+                </div>
+                <button class="btn-connect" id="btn-instagram">Connect</button>
+            </div>
+
+            <!-- Facebook -->
+            <div class="platform-card" data-platform="facebook">
+                <div class="platform-icon facebook-bg"><i class="fab fa-facebook-f"></i></div>
+                <div class="platform-name">Facebook</div>
+                <div class="platform-desc">Connect via OAuth (coming soon)</div>
+                <div class="connection-status">
+                    <span class="status-dot disconnected" id="status-facebook"></span>
+                    <span class="status-text disconnected" id="statusText-facebook">Not Connected</span>
+                </div>
+                <button class="btn-connect" id="btn-facebook">Connect</button>
+            </div>
+
+            <!-- TikTok -->
+            <div class="platform-card" data-platform="tiktok">
+                <div class="platform-icon tiktok-bg"><i class="fab fa-tiktok"></i></div>
+                <div class="platform-name">TikTok</div>
+                <div class="platform-desc">Connect via OAuth (coming soon)</div>
+                <div class="connection-status">
+                    <span class="status-dot disconnected" id="status-tiktok"></span>
+                    <span class="status-text disconnected" id="statusText-tiktok">Not Connected</span>
+                </div>
+                <button class="btn-connect" id="btn-tiktok">Connect</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Plan Required Modal -->
+    <div class="modal-overlay" id="planModal">
+        <div class="modal-content">
+            <button class="modal-close" id="closePlanModal">&times;</button>
+            <div class="modal-title">Premium Plan Required</div>
+            <div class="modal-desc">Connecting social accounts requires an active premium plan. Please choose a plan to continue.</div>
+            <div class="modal-actions">
+                <button class="btn-modal primary" id="viewPlansBtn">View Plans</button>
+                <button class="btn-modal secondary" id="cancelPlanBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- YouTube API Key Modal -->
+    <div class="modal-overlay" id="youtubeModal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeYoutubeModal">&times;</button>
+            <div class="modal-title">Connect YouTube</div>
+            <div class="modal-desc">Enter your YouTube Data API v3 key. You can get one from Google Cloud Console.</div>
+            <div class="form-group">
+                <label>API Key</label>
+                <input type="text" id="youtubeApiKey" placeholder="AIza..." />
+            </div>
+            <div class="modal-actions">
+                <button class="btn-modal primary" id="saveYoutubeBtn">Save & Connect</button>
+                <button class="btn-modal secondary" id="cancelYoutubeBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- OAuth Placeholder Modal -->
+    <div class="modal-overlay" id="oauthModal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeOauthModal">&times;</button>
+            <div class="modal-title" id="oauthTitle">Connect Instagram</div>
+            <div class="modal-desc">Redirecting to Instagram OAuth... (simulated)</div>
+            <div class="modal-actions">
+                <button class="btn-modal primary" id="oauthContinueBtn">Continue</button>
+                <button class="btn-modal secondary" id="oauthCancelBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast-notification" id="toast"></div>
+
+    <!-- Profile Loader -->
+    <script src="assets/js/profile-loader.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // ===== Theme Toggle =====
+            const themeToggle = document.getElementById('themeToggle');
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+                themeToggle.querySelector('i').className = 'fas fa-sun';
+            }
+            themeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark');
+                const isDark = document.body.classList.contains('dark');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                this.querySelector('i').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+            });
+
+            // ===== Toast =====
+            function showToast(message, icon = 'fa-check-circle') {
+                const toast = document.getElementById('toast');
+                toast.innerHTML = `<i class="fas ${icon}"></i> ${message}`;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3000);
+            }
+
+            // ===== Helper: Check premium plan =====
+            function hasPremiumPlan() {
+                const plan = localStorage.getItem('userPlan') || 'free';
+                return plan === 'premium' || plan === 'pro';
+            }
+
+            // ===== Update platform UI =====
+            const connectedAccounts = JSON.parse(localStorage.getItem('connectedAccounts') || '[]');
+
+            function updatePlatformUI() {
+                const platforms = ['youtube', 'instagram', 'facebook', 'tiktok'];
+                platforms.forEach(platform => {
+                    const statusDot = document.getElementById(`status-${platform}`);
+                    const statusText = document.getElementById(`statusText-${platform}`);
+                    const btn = document.getElementById(`btn-${platform}`);
+                    const isConnected = connectedAccounts.includes(platform);
+                    if (statusDot && statusText && btn) {
+                        statusDot.className = `status-dot ${isConnected ? 'connected' : 'disconnected'}`;
+                        statusText.className = `status-text ${isConnected ? 'connected' : 'disconnected'}`;
+                        statusText.textContent = isConnected ? 'Connected' : 'Not Connected';
+                        btn.textContent = isConnected ? 'Disconnect' : 'Connect';
+                        btn.classList.toggle('disconnect', isConnected);
+                    }
+                });
+            }
+            updatePlatformUI();
+
+            // ===== Connect button handlers =====
+            const planModal = document.getElementById('planModal');
+            const youtubeModal = document.getElementById('youtubeModal');
+            const oauthModal = document.getElementById('oauthModal');
+            const oauthTitle = document.getElementById('oauthTitle');
+
+            function openModal(modal) { modal.classList.add('show'); }
+            function closeModal(modal) { modal.classList.remove('show'); }
+            function closeAllModals() {
+                closeModal(planModal);
+                closeModal(youtubeModal);
+                closeModal(oauthModal);
+            }
+
+            // Connect buttons
+            document.getElementById('btn-youtube').addEventListener('click', function() {
+                if (connectedAccounts.includes('youtube')) {
+                    const idx = connectedAccounts.indexOf('youtube');
+                    if (idx > -1) connectedAccounts.splice(idx, 1);
+                    localStorage.setItem('connectedAccounts', JSON.stringify(connectedAccounts));
+                    updatePlatformUI();
+                    showToast('YouTube disconnected', 'fa-plug');
+                    return;
+                }
+                if (!hasPremiumPlan()) {
+                    openModal(planModal);
+                } else {
+                    openModal(youtubeModal);
+                }
+            });
+
+            document.getElementById('btn-instagram').addEventListener('click', function() {
+                if (connectedAccounts.includes('instagram')) {
+                    const idx = connectedAccounts.indexOf('instagram');
+                    if (idx > -1) connectedAccounts.splice(idx, 1);
+                    localStorage.setItem('connectedAccounts', JSON.stringify(connectedAccounts));
+                    updatePlatformUI();
+                    showToast('Instagram disconnected', 'fa-plug');
+                    return;
+                }
+                if (!hasPremiumPlan()) {
+                    openModal(planModal);
+                } else {
+                    oauthTitle.textContent = 'Connect Instagram';
+                    openModal(oauthModal);
+                }
+            });
+
+            document.getElementById('btn-facebook').addEventListener('click', function() {
+                if (connectedAccounts.includes('facebook')) {
+                    const idx = connectedAccounts.indexOf('facebook');
+                    if (idx > -1) connectedAccounts.splice(idx, 1);
+                    localStorage.setItem('connectedAccounts', JSON.stringify(connectedAccounts));
+                    updatePlatformUI();
+                    showToast('Facebook disconnected', 'fa-plug');
+                    return;
+                }
+                if (!hasPremiumPlan()) {
+                    openModal(planModal);
+                } else {
+                    oauthTitle.textContent = 'Connect Facebook';
+                    openModal(oauthModal);
+                }
+            });
+
+            document.getElementById('btn-tiktok').addEventListener('click', function() {
+                if (connectedAccounts.includes('tiktok')) {
+                    const idx = connectedAccounts.indexOf('tiktok');
+                    if (idx > -1) connectedAccounts.splice(idx, 1);
+                    localStorage.setItem('connectedAccounts', JSON.stringify(connectedAccounts));
+                    updatePlatformUI();
+                    showToast('TikTok disconnected', 'fa-plug');
+                    return;
+                }
+                if (!hasPremiumPlan()) {
+                    openModal(planModal);
+                } else {
+                    oauthTitle.textContent = 'Connect TikTok';
+                    openModal(oauthModal);
+                }
+            });
+
+            // Plan modal actions
+            document.getElementById('viewPlansBtn').addEventListener('click', function() {
+                window.location.href = 'marketplace.html';
+            });
+            document.getElementById('cancelPlanBtn').addEventListener('click', function() {
+                closeModal(planModal);
+            });
+
+            // YouTube modal actions
+            document.getElementById('saveYoutubeBtn').addEventListener('click', function() {
+                const apiKey = document.getElementById('youtubeApiKey').value.trim();
+                if (!apiKey) {
+                    showToast('Please enter a valid API key', 'fa-exclamation-circle');
+                    return;
+                }
+                localStorage.setItem('youtubeApiKey', apiKey);
+                if (!connectedAccounts.includes('youtube')) {
+                    connectedAccounts.push('youtube');
+                    localStorage.setItem('connectedAccounts', JSON.stringify(connectedAccounts));
+                }
+                updatePlatformUI();
+                closeModal(youtubeModal);
+                showToast('YouTube connected successfully!', 'fa-check-circle');
+            });
+            document.getElementById('cancelYoutubeBtn').addEventListener('click', function() {
+                closeModal(youtubeModal);
+            });
+            document.getElementById('closeYoutubeModal').addEventListener('click', function() {
+                closeModal(youtubeModal);
+            });
+
+            // OAuth modal actions (placeholder)
+            document.getElementById('oauthContinueBtn').addEventListener('click', function() {
+                const platform = oauthTitle.textContent.replace('Connect ', '').toLowerCase();
+                if (!connectedAccounts.includes(platform)) {
+                    connectedAccounts.push(platform);
+                    localStorage.setItem('connectedAccounts', JSON.stringify(connectedAccounts));
+                }
+                updatePlatformUI();
+                closeModal(oauthModal);
+                showToast(`${platform.charAt(0).toUpperCase() + platform.slice(1)} connected successfully!`, 'fa-check-circle');
+            });
+            document.getElementById('oauthCancelBtn').addEventListener('click', function() {
+                closeModal(oauthModal);
+            });
+            document.getElementById('closeOauthModal').addEventListener('click', function() {
+                closeModal(oauthModal);
+            });
+
+            // Close modals when clicking overlay
+            document.querySelectorAll('.modal-overlay').forEach(overlay => {
+                overlay.addEventListener('click', function(e) {
+                    if (e.target === this) closeModal(this);
+                });
+            });
+
+            // Escape key to close modals
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeAllModals();
+            });
+        });
+    </script>
+
+</body>
+</html>
